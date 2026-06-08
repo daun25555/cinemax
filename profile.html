@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profil Saya - CineMax</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .profile-layout {
+      display: grid; grid-template-columns: 300px 1fr;
+      gap: 32px; padding: 40px 48px;
+    }
+
+    /* ---- Profile Card ---- */
+    .profile-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 32px;
+      text-align: center; position: sticky; top: 90px;
+      height: fit-content;
+    }
+
+    .profile-avatar-wrap {
+      position: relative; display: inline-block; margin-bottom: 20px;
+    }
+
+    .profile-avatar {
+      width: 100px; height: 100px; border-radius: 50%;
+      background: var(--gradient-primary);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.5rem; font-weight: 900; color: var(--bg);
+      margin: 0 auto;
+    }
+
+    .profile-avatar-glow {
+      position: absolute; inset: -4px;
+      border-radius: 50%;
+      background: var(--gradient-primary);
+      opacity: 0.3; z-index: -1;
+      filter: blur(8px);
+    }
+
+    .profile-name { font-size: 1.2rem; font-weight: 800; margin-bottom: 6px; }
+    .profile-email { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 24px; }
+
+    .profile-stats {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px; margin-bottom: 24px;
+    }
+
+    .profile-stat {
+      background: rgba(255,255,255,0.04);
+      border-radius: var(--radius); padding: 12px 8px;
+    }
+
+    .profile-stat .num {
+      font-size: 1.4rem; font-weight: 900;
+      color: var(--primary);
+    }
+
+    .profile-stat .lbl { font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; }
+
+    .profile-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(0,245,212,0.08); border: 1px solid rgba(0,245,212,0.15);
+      color: var(--primary); padding: 6px 14px; border-radius: 50px;
+      font-size: 0.78rem; font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    /* ---- Tabs ---- */
+    .profile-tabs {
+      display: flex; gap: 4px; border-bottom: 1px solid var(--border);
+      margin-bottom: 28px;
+    }
+
+    .tab-btn {
+      padding: 12px 20px; background: none; border: none;
+      color: var(--text-muted); font-family: 'Inter', sans-serif;
+      font-size: 0.9rem; font-weight: 600; cursor: pointer;
+      position: relative; transition: color 0.2s;
+    }
+
+    .tab-btn::after {
+      content: ''; position: absolute; bottom: -1px; left: 0; right: 0;
+      height: 2px; background: var(--primary);
+      transform: scaleX(0); transition: transform 0.2s;
+    }
+
+    .tab-btn.active { color: var(--primary); }
+    .tab-btn.active::after { transform: scaleX(1); }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* ---- Ticket Card ---- */
+    .ticket-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); overflow: hidden;
+      display: flex; margin-bottom: 16px;
+      transition: all 0.3s;
+    }
+
+    .ticket-card:hover { border-color: rgba(0,245,212,0.2); transform: translateY(-2px); }
+
+    .ticket-poster {
+      width: 80px; flex-shrink: 0;
+    }
+
+    .ticket-poster img { width: 100%; height: 100%; object-fit: cover; }
+
+    .ticket-details { flex: 1; padding: 20px; }
+
+    .ticket-title { font-size: 1rem; font-weight: 800; margin-bottom: 8px; }
+
+    .ticket-info {
+      display: flex; gap: 20px; flex-wrap: wrap;
+      font-size: 0.82rem; color: var(--text-muted); margin-bottom: 12px;
+    }
+
+    .ticket-info span { display: flex; align-items: center; gap: 4px; }
+
+    .ticket-seats {
+      display: flex; gap: 6px; flex-wrap: wrap;
+    }
+
+    .ticket-seat-chip {
+      background: rgba(0,245,212,0.1); border: 1px solid rgba(0,245,212,0.2);
+      color: var(--primary); padding: 3px 10px;
+      border-radius: 20px; font-size: 0.75rem; font-weight: 700;
+    }
+
+    .ticket-price-col {
+      padding: 20px; display: flex; flex-direction: column;
+      justify-content: center; align-items: flex-end;
+      border-left: 1px dashed var(--border); min-width: 120px;
+    }
+
+    .ticket-price-col .price { font-size: 1rem; font-weight: 800; color: var(--primary); }
+    .ticket-price-col .status { font-size: 0.72rem; color: #00F5D4; margin-top: 4px; }
+
+    .ticket-id { font-size: 0.68rem; color: var(--text-muted); font-family: monospace; margin-top: 8px; }
+
+    /* ---- Wishlist ---- */
+    .wishlist-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 16px;
+    }
+
+    @media (max-width: 900px) {
+      .profile-layout { grid-template-columns: 1fr; }
+      .profile-card { position: static; }
+    }
+
+    @media (max-width: 600px) {
+      .profile-layout { padding: 20px; }
+      .ticket-card { flex-direction: column; }
+      .ticket-price-col { border-left: none; border-top: 1px dashed var(--border); align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="nav-logo">🎬 CineMax</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Beranda</a></li>
+    <li><a href="movies.html">Film</a></li>
+  </ul>
+  <div class="nav-right">
+    <div id="nav-admin"><a href="admin.html" class="btn btn-ghost btn-sm">⚙ Admin</a></div>
+    <div id="nav-auth">
+      <a href="login.html" class="btn btn-secondary btn-sm">Masuk</a>
+      <a href="register.html" class="btn btn-primary btn-sm">Daftar</a>
+    </div>
+    <div id="nav-user" style="display:none"></div>
+  </div>
+</nav>
+
+<div class="page-wrapper">
+  <!-- Page Header -->
+  <div style="background:linear-gradient(180deg,rgba(0,245,212,0.06) 0%,transparent 100%);border-bottom:1px solid var(--border);padding:40px 48px 0">
+    <h1 style="font-family:'Montserrat',sans-serif;font-size:1.8rem;font-weight:900;margin-bottom:4px">Profil Saya</h1>
+    <p style="color:var(--text-muted);font-size:0.88rem;margin-bottom:0">Kelola akun dan lihat tiket kamu</p>
+    <!-- Tabs in header -->
+    <div class="profile-tabs" style="margin-top:24px;margin-bottom:0">
+      <button class="tab-btn active" onclick="switchTab('tickets', this)" id="tabTickets">🎟 Tiket Saya</button>
+      <button class="tab-btn" onclick="switchTab('reviews', this)" id="tabReviews">⭐ Ulasan Saya</button>
+      <button class="tab-btn" onclick="switchTab('wishlist', this)" id="tabWishlist">♥ Wishlist</button>
+    </div>
+  </div>
+
+  <div class="profile-layout">
+    <!-- Sidebar -->
+    <aside>
+      <div class="profile-card">
+        <div class="profile-avatar-wrap">
+          <div class="profile-avatar-glow"></div>
+          <div class="profile-avatar" id="profileAvatar">?</div>
+        </div>
+        <div class="profile-name" id="profileName">-</div>
+        <div class="profile-email" id="profileEmail">-</div>
+        <div class="profile-badge">👤 Pengguna CineMax</div>
+
+        <div class="profile-stats">
+          <div class="profile-stat">
+            <div class="num" id="statTickets">0</div>
+            <div class="lbl">Tiket</div>
+          </div>
+          <div class="profile-stat">
+            <div class="num" id="statReviews">0</div>
+            <div class="lbl">Ulasan</div>
+          </div>
+          <div class="profile-stat">
+            <div class="num" id="statWishlist">0</div>
+            <div class="lbl">Wishlist</div>
+          </div>
+        </div>
+
+        <a href="movies.html" class="btn btn-primary" style="width:100%;justify-content:center;margin-bottom:10px">
+          🎬 Jelajahi Film
+        </a>
+        <button class="btn btn-secondary" style="width:100%;justify-content:center" onclick="Auth.logout()">
+          Keluar
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div>
+      <!-- Tickets Tab -->
+      <div class="tab-content active" id="tab-tickets">
+        <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:20px">Tiket yang Dibeli</h2>
+        <div id="ticketsList"></div>
+      </div>
+
+      <!-- Reviews Tab -->
+      <div class="tab-content" id="tab-reviews">
+        <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:20px">Ulasan Saya</h2>
+        <div id="reviewsList"></div>
+      </div>
+
+      <!-- Wishlist Tab -->
+      <div class="tab-content" id="tab-wishlist">
+        <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:20px">Film Wishlist</h2>
+        <div class="wishlist-grid" id="wishlistGrid"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer style="background:var(--card);border-top:1px solid var(--border);padding:32px 48px;text-align:center;color:var(--text-muted);font-size:0.85rem">
+  <p>© 2024 CineMax. All rights reserved.</p>
+</footer>
+
+<script src="js/app.js"></script>
+<script>
+  window.addEventListener('scroll', () => {
+    document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+  });
+
+  function switchTab(tab, btn) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const user = Auth.requireAuth();
+    if (!user) return;
+
+    // Profile info
+    document.getElementById('profileAvatar').textContent = user.avatar || user.name.charAt(0);
+    document.getElementById('profileName').textContent = user.name;
+    document.getElementById('profileEmail').textContent = user.email;
+
+    // Load data
+    const tickets = Tickets.getByUser(user.id);
+    const reviews = Ratings.getByUser(user.id);
+    const wishlist = Storage.get('cinemax_watchlist') || [];
+
+    document.getElementById('statTickets').textContent = tickets.length;
+    document.getElementById('statReviews').textContent = reviews.length;
+    document.getElementById('statWishlist').textContent = wishlist.length;
+
+    loadTickets(tickets);
+    loadReviews(reviews);
+    loadWishlist(wishlist);
+  });
+
+  function loadTickets(tickets) {
+    const el = document.getElementById('ticketsList');
+    if (!tickets.length) {
+      el.innerHTML = `
+        <div class="empty-state">
+          <div class="icon">🎟</div>
+          <h3>Belum ada tiket</h3>
+          <p>Beli tiket bioskop favorit kamu sekarang!</p>
+          <a href="movies.html" class="btn btn-primary" style="margin-top:16px">Beli Tiket</a>
+        </div>
+      `;
+      return;
+    }
+    tickets.slice().reverse().forEach(t => {
+      const seats = t.seatNumbers ? t.seatNumbers.join(', ') : t.seats + ' kursi';
+      el.innerHTML += `
+        <div class="ticket-card">
+          <div class="ticket-poster">
+            <img src="${t.moviePoster}" alt="${t.movieTitle}" onerror="this.style.background='var(--card)'" />
+          </div>
+          <div class="ticket-details">
+            <div class="ticket-title">${t.movieTitle}</div>
+            <div class="ticket-info">
+              <span>📅 ${t.date}</span>
+              <span>⏰ ${t.showtime}</span>
+              <span>💺 ${t.seats} kursi</span>
+            </div>
+            <div class="ticket-seats">
+              ${t.seatNumbers ? t.seatNumbers.map(s => `<span class="ticket-seat-chip">${s}</span>`).join('') : ''}
+            </div>
+            <div class="ticket-id">ID: ${t.id}</div>
+          </div>
+          <div class="ticket-price-col">
+            <div class="price">${UI.formatPrice(t.totalPrice)}</div>
+            <div class="status">✓ Dikonfirmasi</div>
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  function loadReviews(reviews) {
+    const el = document.getElementById('reviewsList');
+    if (!reviews.length) {
+      el.innerHTML = `
+        <div class="empty-state">
+          <div class="icon">⭐</div>
+          <h3>Belum ada ulasan</h3>
+          <p>Tonton film dan berikan ulasanmu!</p>
+          <a href="movies.html" class="btn btn-primary" style="margin-top:16px">Lihat Film</a>
+        </div>
+      `;
+      return;
+    }
+    reviews.slice().reverse().forEach(r => {
+      const movie = Movies.getById(r.movieId);
+      const date = new Date(r.date).toLocaleDateString('id-ID', { day:'numeric', month:'long', year:'numeric' });
+      el.innerHTML += `
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-bottom:12px;display:flex;gap:16px;align-items:flex-start">
+          ${movie ? `<img src="${movie.poster}" style="width:50px;height:70px;object-fit:cover;border-radius:8px;flex-shrink:0" alt="${movie.title}" onerror="this.style.background='var(--card)'" />` : ''}
+          <div style="flex:1">
+            <div style="font-weight:800;font-size:0.95rem;margin-bottom:4px">${movie?.title || 'Film Dihapus'}</div>
+            <div style="color:#FFD700;margin-bottom:8px;font-size:1rem">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
+            ${r.review ? `<p style="color:rgba(255,255,255,0.7);font-size:0.88rem;line-height:1.6">${r.review}</p>` : ''}
+            <div style="font-size:0.75rem;color:var(--text-muted);margin-top:8px">${date}</div>
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  function loadWishlist(wishlistIds) {
+    const grid = document.getElementById('wishlistGrid');
+    if (!wishlistIds.length) {
+      grid.innerHTML = `
+        <div class="empty-state" style="grid-column:1/-1">
+          <div class="icon">♡</div>
+          <h3>Wishlist kosong</h3>
+          <p>Tambahkan film favorit ke wishlist!</p>
+          <a href="movies.html" class="btn btn-primary" style="margin-top:16px">Jelajahi Film</a>
+        </div>
+      `;
+      return;
+    }
+    wishlistIds.forEach(id => {
+      const m = Movies.getById(id);
+      if (!m) return;
+      const div = document.createElement('div');
+      div.className = 'movie-card';
+      div.onclick = () => window.location.href = `movie-detail.html?id=${m.id}`;
+      div.innerHTML = `
+        <div class="movie-card-poster">
+          <img src="${m.poster}" alt="${m.title}" onerror="this.src='https://via.placeholder.com/200x300/151520/00F5D4?text=${encodeURIComponent(m.title)}'" />
+          <span class="movie-card-rating">⭐ ${m.rating}</span>
+        </div>
+        <div class="movie-card-body">
+          <div class="movie-card-title">${m.title}</div>
+          <div class="movie-card-meta"><span>${m.year}</span></div>
+        </div>
+      `;
+      grid.appendChild(div);
+    });
+  }
+</script>
+</body>
+</html>

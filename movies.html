@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Film - CineMax</title>
+  <meta name="description" content="Jelajahi koleksi film terlengkap di CineMax. Filter berdasarkan genre, tahun, dan rating." />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .page-header {
+      background: linear-gradient(180deg, rgba(0,245,212,0.06) 0%, transparent 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 60px 48px 40px;
+    }
+
+    .page-header h1 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 2.4rem; font-weight: 900; margin-bottom: 8px;
+    }
+
+    .filters-bar {
+      display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+      padding: 24px 48px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+      position: sticky; top: 72px; z-index: 50;
+      backdrop-filter: blur(12px);
+    }
+
+    .filter-select {
+      padding: 8px 16px; border-radius: 50px;
+      background: rgba(255,255,255,0.05); border: 1.5px solid var(--border);
+      color: var(--text); font-family: 'Inter', sans-serif; font-size: 0.85rem;
+      cursor: pointer; outline: none; transition: all 0.2s;
+    }
+
+    .filter-select:focus { border-color: var(--primary); }
+    .filter-select option { background: var(--card); }
+
+    .search-inline {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.05);
+      border: 1.5px solid var(--border); border-radius: 50px;
+      padding: 6px 16px; flex: 1; min-width: 200px; max-width: 320px;
+      transition: border-color 0.2s;
+    }
+
+    .search-inline:focus-within { border-color: var(--primary); }
+    .search-inline input {
+      flex: 1; background: none; border: none; outline: none;
+      color: var(--text); font-size: 0.85rem; font-family: 'Inter', sans-serif;
+    }
+    .search-inline input::placeholder { color: var(--text-muted); }
+
+    .movies-count {
+      margin-left: auto; font-size: 0.85rem; color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .movies-content { padding: 40px 48px; }
+
+    .movies-grid-full {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 24px;
+    }
+
+    .load-more-wrap { text-align: center; margin-top: 48px; }
+
+    @media (max-width: 900px) {
+      .page-header { padding: 40px 20px; }
+      .filters-bar { padding: 16px 20px; }
+      .movies-content { padding: 24px 20px; }
+      .movies-grid-full { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="nav-logo">🎬 CineMax</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Beranda</a></li>
+    <li><a href="movies.html" class="active">Film</a></li>
+    <li><a href="movies.html?filter=nowplaying">Tayang Sekarang</a></li>
+    <li><a href="movies.html?filter=upcoming">Segera Hadir</a></li>
+  </ul>
+  <div class="nav-right">
+    <div id="nav-admin"><a href="admin.html" class="btn btn-ghost btn-sm">⚙ Admin</a></div>
+    <div id="nav-auth">
+      <a href="login.html" class="btn btn-secondary btn-sm">Masuk</a>
+      <a href="register.html" class="btn btn-primary btn-sm">Daftar</a>
+    </div>
+    <div id="nav-user" style="display:none"></div>
+  </div>
+</nav>
+
+<div class="page-wrapper">
+  <div class="page-header">
+    <h1>🎬 Jelajahi <span style="color:var(--primary)">Film</span></h1>
+    <p style="color:var(--text-muted)">Temukan film favorit kamu dari ribuan pilihan terbaik</p>
+  </div>
+
+  <!-- Filters Bar -->
+  <div class="filters-bar">
+    <div class="search-inline">
+      <span style="color:var(--text-muted)">🔍</span>
+      <input type="text" id="searchInput" placeholder="Cari film..." />
+    </div>
+
+    <select class="filter-select" id="genreFilter">
+      <option value="">Semua Genre</option>
+      <option value="Action">Action</option>
+      <option value="Drama">Drama</option>
+      <option value="Sci-Fi">Sci-Fi</option>
+      <option value="Comedy">Comedy</option>
+      <option value="Horror">Horror</option>
+      <option value="Thriller">Thriller</option>
+      <option value="Romance">Romance</option>
+      <option value="Adventure">Adventure</option>
+      <option value="Animation">Animation</option>
+      <option value="Crime">Crime</option>
+      <option value="History">History</option>
+    </select>
+
+    <select class="filter-select" id="statusFilter">
+      <option value="">Semua Status</option>
+      <option value="nowplaying">Tayang Sekarang</option>
+      <option value="upcoming">Segera Hadir</option>
+    </select>
+
+    <select class="filter-select" id="sortFilter">
+      <option value="newest">Terbaru</option>
+      <option value="rating">Rating Tertinggi</option>
+      <option value="title">A-Z</option>
+      <option value="price-low">Harga Terendah</option>
+    </select>
+
+    <div class="movies-count" id="moviesCount">0 film</div>
+  </div>
+
+  <!-- Movies Grid -->
+  <div class="movies-content">
+    <div class="movies-grid-full" id="moviesGrid"></div>
+    <div class="load-more-wrap">
+      <button class="btn btn-ghost" id="loadMoreBtn" onclick="loadMore()" style="display:none">
+        Muat Lebih Banyak
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer style="background:var(--card);border-top:1px solid var(--border);padding:32px 48px;text-align:center;color:var(--text-muted);font-size:0.85rem">
+  <p>© 2024 CineMax. All rights reserved.</p>
+</footer>
+
+<script src="js/app.js"></script>
+<script>
+  window.addEventListener('scroll', () => {
+    document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+  });
+
+  let allMovies = [];
+  let filtered = [];
+  let displayed = 0;
+  const PER_PAGE = 12;
+
+  function createMovieCard(movie) {
+    const avgRating = Ratings.getAverage(movie.id);
+    const displayRating = avgRating || movie.rating;
+    const div = document.createElement('div');
+    div.className = 'movie-card fade-in';
+    div.onclick = () => window.location.href = `movie-detail.html?id=${movie.id}`;
+    div.innerHTML = `
+      <div class="movie-card-poster">
+        <img src="${movie.poster}" alt="${movie.title}" loading="lazy"
+          onerror="this.src='https://via.placeholder.com/200x300/151520/00F5D4?text=${encodeURIComponent(movie.title)}'" />
+        <div class="movie-card-overlay">
+          <button class="btn btn-primary btn-sm" style="width:100%">▶ Lihat Detail</button>
+        </div>
+        ${movie.nowPlaying ? '<span class="movie-card-badge">Tayang</span>' : ''}
+        <span class="movie-card-rating">⭐ ${displayRating}</span>
+      </div>
+      <div class="movie-card-body">
+        <div class="movie-card-title">${movie.title}</div>
+        <div class="movie-card-meta">
+          <span>${movie.year}</span>
+          <span>·</span>
+          <span>${UI.formatDuration(movie.duration)}</span>
+        </div>
+        <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
+          ${movie.genre.slice(0,2).map(g => `<span class="movie-card-genre">${g}</span>`).join('')}
+        </div>
+        <div class="movie-card-price">${UI.formatPrice(movie.price)}</div>
+      </div>
+    `;
+    return div;
+  }
+
+  function applyFilters() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    const genre = document.getElementById('genreFilter').value;
+    const status = document.getElementById('statusFilter').value;
+    const sort = document.getElementById('sortFilter').value;
+
+    filtered = allMovies.filter(m => {
+      if (q && !m.title.toLowerCase().includes(q) && !m.description.toLowerCase().includes(q)) return false;
+      if (genre && !m.genre.includes(genre)) return false;
+      if (status === 'nowplaying' && !m.nowPlaying) return false;
+      if (status === 'upcoming' && m.nowPlaying) return false;
+      return true;
+    });
+
+    if (sort === 'rating') filtered.sort((a,b) => b.rating - a.rating);
+    else if (sort === 'title') filtered.sort((a,b) => a.title.localeCompare(b.title));
+    else if (sort === 'price-low') filtered.sort((a,b) => a.price - b.price);
+    else filtered.sort((a,b) => b.id - a.id);
+
+    displayed = 0;
+    document.getElementById('moviesGrid').innerHTML = '';
+    document.getElementById('moviesCount').textContent = filtered.length + ' film';
+    loadMore();
+  }
+
+  function loadMore() {
+    const grid = document.getElementById('moviesGrid');
+    const slice = filtered.slice(displayed, displayed + PER_PAGE);
+    if (!slice.length && displayed === 0) {
+      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+        <div class="icon">🎬</div>
+        <h3>Tidak ada film ditemukan</h3>
+        <p>Coba ubah filter pencarian kamu</p>
+      </div>`;
+    }
+    slice.forEach(m => grid.appendChild(createMovieCard(m)));
+    displayed += slice.length;
+
+    const btn = document.getElementById('loadMoreBtn');
+    btn.style.display = displayed < filtered.length ? 'inline-flex' : 'none';
+
+    // Animate
+    setTimeout(() => {
+      document.querySelectorAll('.fade-in:not(.visible)').forEach(el => {
+        const obs = new IntersectionObserver(entries => {
+          entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+        });
+        obs.observe(el);
+      });
+    }, 50);
+  }
+
+  // URL params
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('q')) {
+    document.getElementById('searchInput').value = params.get('q');
+  }
+  if (params.get('filter') === 'nowplaying') {
+    document.getElementById('statusFilter').value = 'nowplaying';
+  }
+
+  // Event listeners
+  ['searchInput','genreFilter','statusFilter','sortFilter'].forEach(id => {
+    document.getElementById(id).addEventListener('input', applyFilters);
+    document.getElementById(id).addEventListener('change', applyFilters);
+  });
+
+  document.addEventListener('DOMContentLoaded', () => {
+    allMovies = Movies.getAll();
+    applyFilters();
+  });
+</script>
+</body>
+</html>

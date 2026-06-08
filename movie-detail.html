@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Detail Film - CineMax</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* ==================== HERO BACKDROP ==================== */
+    .movie-backdrop {
+      position: relative;
+      height: 75vh; min-height: 520px;
+      overflow: hidden;
+    }
+
+    .backdrop-img {
+      position: absolute; inset: 0;
+      background-size: cover; background-position: center top;
+      filter: brightness(0.45);
+      animation: slowZoom 30s ease-in-out infinite alternate;
+    }
+
+    @keyframes slowZoom {
+      from { transform: scale(1); }
+      to   { transform: scale(1.08); }
+    }
+
+    .backdrop-overlay {
+      position: absolute; inset: 0;
+      background:
+        linear-gradient(180deg, rgba(10,10,15,0.2) 0%, rgba(10,10,15,1) 100%),
+        linear-gradient(90deg, rgba(10,10,15,0.85) 0%, transparent 55%);
+    }
+
+    .backdrop-content {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      display: flex; gap: 36px; align-items: flex-end;
+      padding: 0 48px 48px;
+    }
+
+    .movie-poster-box {
+      width: 220px; flex-shrink: 0;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.7);
+      border: 2px solid rgba(255,255,255,0.1);
+      transform: translateY(50px);
+      transition: transform 0.4s ease;
+    }
+
+    .movie-poster-box:hover { transform: translateY(46px) scale(1.02); }
+
+    .movie-poster-box img { width: 100%; display: block; }
+
+    .movie-info-hero { flex: 1; padding-bottom: 8px; }
+
+    .movie-genres-hero { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+
+    .movie-title-hero {
+      font-family: 'Montserrat', sans-serif;
+      font-size: clamp(1.8rem, 4vw, 3.2rem);
+      font-weight: 900; line-height: 1.1;
+      margin-bottom: 18px;
+    }
+
+    .movie-stats-hero {
+      display: flex; gap: 20px; align-items: center;
+      margin-bottom: 24px; flex-wrap: wrap;
+    }
+
+    .stat-item {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 0.9rem; color: rgba(255,255,255,0.8);
+    }
+
+    .stat-icon { font-size: 1rem; }
+    .stat-value { font-weight: 700; }
+
+    .rating-pill {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(255,215,0,0.1);
+      border: 1px solid rgba(255,215,0,0.25);
+      padding: 7px 16px; border-radius: 50px;
+    }
+
+    .rating-pill .num { color: #FFD700; font-weight: 800; font-size: 1rem; }
+
+    .movie-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+    /* ==================== DETAIL LAYOUT ==================== */
+    .detail-layout {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 40px;
+      padding: 64px 48px 80px;
+      margin-top: 28px;
+    }
+
+    /* ==================== SECTIONS ==================== */
+    .section-block { margin-bottom: 44px; }
+
+    .section-label {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.15rem; font-weight: 800;
+      margin-bottom: 18px;
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    .section-label::after {
+      content: ''; flex: 1; height: 1px;
+      background: linear-gradient(90deg, var(--border), transparent);
+    }
+
+    /* ==================== SINOPSIS ==================== */
+    .synopsis-text {
+      color: rgba(255,255,255,0.78);
+      line-height: 1.85; font-size: 0.95rem;
+    }
+
+    /* ==================== DIRECTOR & CAST ==================== */
+    .crew-section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .director-card {
+      padding: 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 16px;
+    }
+
+    .director-avatar {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      background: var(--gradient-secondary);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem; flex-shrink: 0;
+    }
+
+    .director-info .label {
+      font-size: 0.72rem; font-weight: 700;
+      color: var(--text-muted); text-transform: uppercase;
+      letter-spacing: 1px; margin-bottom: 4px;
+    }
+
+    .director-info .name {
+      font-size: 1.1rem; font-weight: 800;
+      background: var(--gradient-secondary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .cast-grid {
+      padding: 24px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 12px;
+    }
+
+    .cast-card {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 14px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: var(--radius);
+      transition: all 0.25s;
+    }
+
+    .cast-card:hover {
+      background: rgba(0,245,212,0.06);
+      border-color: rgba(0,245,212,0.15);
+      transform: translateY(-2px);
+    }
+
+    .cast-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--gradient-primary);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--bg); font-weight: 800; font-size: 0.82rem;
+      flex-shrink: 0;
+    }
+
+    .cast-name {
+      font-size: 0.82rem; font-weight: 600;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    /* ==================== TRAILER ==================== */
+    .trailer-box {
+      aspect-ratio: 16/9;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--card);
+    }
+
+    .trailer-box iframe { width: 100%; height: 100%; border: none; }
+
+    /* ==================== RATING & REVIEW ==================== */
+    .review-form-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    .review-form-title {
+      font-size: 1rem; font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    .star-row {
+      display: flex; gap: 6px; margin-bottom: 18px;
+    }
+
+    .star-btn {
+      font-size: 2.4rem; cursor: pointer;
+      color: rgba(255,255,255,0.15);
+      transition: all 0.2s; background: none; border: none;
+      line-height: 1; padding: 2px;
+    }
+
+    .star-btn:hover { transform: scale(1.2); }
+
+    .star-btn.active { color: #FFD700; text-shadow: 0 0 12px rgba(255,215,0,0.4); }
+
+    .star-label {
+      font-size: 0.85rem; color: var(--primary);
+      font-weight: 700; margin-left: 12px;
+      display: none;
+    }
+
+    .star-label.show { display: inline; }
+
+    .review-login-box {
+      text-align: center; padding: 36px;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); margin-bottom: 24px;
+    }
+
+    .review-list { display: flex; flex-direction: column; gap: 14px; }
+
+    .review-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      transition: border-color 0.2s;
+    }
+
+    .review-card:hover { border-color: rgba(0,245,212,0.15); }
+
+    .review-top {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-bottom: 12px;
+    }
+
+    .review-user { display: flex; align-items: center; gap: 10px; }
+
+    .review-avatar {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: var(--gradient-primary); color: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 0.88rem; flex-shrink: 0;
+    }
+
+    .review-name { font-weight: 700; font-size: 0.9rem; }
+    .review-date { font-size: 0.75rem; color: var(--text-muted); margin-top: 1px; }
+
+    .review-stars {
+      color: #FFD700; font-size: 0.88rem; letter-spacing: 1px;
+    }
+
+    .review-body {
+      color: rgba(255,255,255,0.72);
+      font-size: 0.9rem; line-height: 1.7;
+    }
+
+    .review-count-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(0,245,212,0.08);
+      border: 1px solid rgba(0,245,212,0.15);
+      padding: 5px 14px; border-radius: 20px;
+      font-size: 0.8rem; color: var(--primary); font-weight: 600;
+    }
+
+    /* ==================== TICKET BOX ==================== */
+    .ticket-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      position: sticky; top: 90px;
+    }
+
+    .ticket-header {
+      background: var(--gradient-primary);
+      padding: 22px 24px; color: var(--bg);
+    }
+
+    .ticket-header h3 { font-size: 1.05rem; font-weight: 800; }
+
+    .ticket-header .price {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.6rem; font-weight: 900; margin-top: 4px;
+    }
+
+    .ticket-header .sub { font-size: 0.8rem; opacity: 0.75; margin-top: 2px; }
+
+    .ticket-body { padding: 24px; }
+
+    .showtime-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .showtime-btn {
+      padding: 11px; text-align: center;
+      border-radius: var(--radius);
+      border: 1.5px solid var(--border);
+      background: rgba(255,255,255,0.04);
+      cursor: pointer; font-size: 0.88rem; font-weight: 600;
+      color: var(--text); transition: all 0.2s;
+    }
+
+    .showtime-btn:hover, .showtime-btn.selected {
+      border-color: var(--primary);
+      background: rgba(0,245,212,0.1);
+      color: var(--primary);
+    }
+
+    .date-scroll {
+      display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px;
+    }
+
+    .date-chip {
+      flex-shrink: 0; padding: 10px 16px; border-radius: var(--radius);
+      border: 1.5px solid var(--border); background: rgba(255,255,255,0.04);
+      cursor: pointer; text-align: center; min-width: 70px; transition: all 0.2s;
+    }
+
+    .date-chip .day { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; }
+    .date-chip .num { font-size: 1.1rem; font-weight: 800; margin-top: 2px; }
+
+    .date-chip:hover, .date-chip.selected {
+      border-color: var(--primary); background: rgba(0,245,212,0.1);
+    }
+    .date-chip.selected .day, .date-chip.selected .num { color: var(--primary); }
+
+    .summary-box {
+      background: rgba(0,245,212,0.05);
+      border: 1px solid rgba(0,245,212,0.15);
+      border-radius: var(--radius);
+      padding: 16px; margin-bottom: 16px;
+    }
+
+    .summary-row {
+      display: flex; justify-content: space-between;
+      font-size: 0.85rem; color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .summary-row:last-child { margin-bottom: 0; }
+
+    .summary-divider {
+      height: 1px; background: var(--border); margin: 10px 0;
+    }
+
+    /* ==================== RESPONSIVE ==================== */
+    @media (max-width: 1100px) {
+      .detail-layout { grid-template-columns: 1fr; }
+      .ticket-box { position: static; }
+    }
+
+    @media (max-width: 768px) {
+      .backdrop-content { flex-direction: column; align-items: flex-start; padding: 0 20px 32px; gap: 20px; }
+      .movie-poster-box { width: 150px; transform: translateY(30px); }
+      .detail-layout { padding: 44px 20px 60px; gap: 28px; }
+      .cast-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 480px) {
+      .movie-poster-box { width: 120px; }
+      .movie-title-hero { font-size: 1.5rem; }
+      .cast-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ======== NAVBAR ======== -->
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="nav-logo">🎬 CineMax</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Beranda</a></li>
+    <li><a href="movies.html" class="active">Film</a></li>
+  </ul>
+  <div class="nav-right">
+    <div id="nav-admin"><a href="admin.html" class="btn btn-ghost btn-sm">⚙ Admin</a></div>
+    <div id="nav-auth">
+      <a href="login.html" class="btn btn-secondary btn-sm">Masuk</a>
+      <a href="register.html" class="btn btn-primary btn-sm">Daftar</a>
+    </div>
+    <div id="nav-user" style="display:none"></div>
+  </div>
+</nav>
+
+<div class="page-wrapper">
+  <!-- Loader -->
+  <div class="loader" id="pageLoader"><div class="spinner"></div></div>
+
+  <!-- ======== HERO BACKDROP ======== -->
+  <div class="movie-backdrop" id="movieBackdrop" style="display:none">
+    <div class="backdrop-img" id="backdropImg"></div>
+    <div class="backdrop-overlay"></div>
+    <div class="backdrop-content">
+      <div class="movie-poster-box">
+        <img id="detailPoster" src="" alt="" />
+      </div>
+      <div class="movie-info-hero">
+        <div class="movie-genres-hero" id="detailGenres"></div>
+        <h1 class="movie-title-hero" id="detailTitle"></h1>
+        <div class="movie-stats-hero">
+          <div class="rating-pill">
+            <span class="stat-icon">⭐</span>
+            <span class="num" id="detailRating">-</span>
+            <span style="font-size:0.75rem;color:rgba(255,255,255,0.5)" id="detailRatingCount"></span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-icon">📅</span>
+            <span class="stat-value" id="detailYear"></span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-icon">⏱</span>
+            <span class="stat-value" id="detailDuration"></span>
+          </div>
+        </div>
+        <div class="movie-actions">
+          <button class="btn btn-primary btn-lg" onclick="scrollTo('#ticketBox')">🎟 Beli Tiket</button>
+          <button class="btn btn-secondary btn-lg" onclick="scrollTo('#trailerSection')">▶ Trailer</button>
+          <button class="btn btn-ghost btn-lg" id="watchlistBtn" onclick="toggleWatchlist()">♡ Wishlist</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======== DETAIL CONTENT ======== -->
+  <div class="detail-layout" id="detailContent" style="display:none">
+
+    <!-- ===== LEFT: Main Info ===== -->
+    <div class="detail-main">
+
+      <!-- Sinopsis -->
+      <div class="section-block">
+        <h2 class="section-label">📖 Sinopsis</h2>
+        <p class="synopsis-text" id="detailDesc"></p>
+      </div>
+
+      <!-- Sutradara & Pemain -->
+      <div class="section-block">
+        <h2 class="section-label">🎭 Sutradara & Pemain</h2>
+        <div class="crew-section">
+          <div class="director-card" id="directorCard">
+            <div class="director-avatar">🎬</div>
+            <div class="director-info">
+              <div class="label">Sutradara</div>
+              <div class="name" id="directorName">-</div>
+            </div>
+          </div>
+          <div class="cast-grid" id="castGrid"></div>
+        </div>
+      </div>
+
+      <!-- Trailer -->
+      <div class="section-block" id="trailerSection">
+        <h2 class="section-label">🎥 Trailer</h2>
+        <div class="trailer-box" id="trailerBox"></div>
+      </div>
+
+      <!-- Ulasan & Rating -->
+      <div class="section-block">
+        <h2 class="section-label">
+          💬 Ulasan
+          <span class="review-count-badge" id="reviewCountBadge">0 ulasan</span>
+        </h2>
+
+        <!-- Form Ulasan (logged in) -->
+        <div id="reviewFormWrap">
+          <div class="review-form-card">
+            <div class="review-form-title">⭐ Beri Penilaianmu</div>
+            <div style="display:flex;align-items:center;margin-bottom:18px">
+              <div class="star-row" id="starInput">
+                <button class="star-btn" data-val="1" onclick="setRating(1)">★</button>
+                <button class="star-btn" data-val="2" onclick="setRating(2)">★</button>
+                <button class="star-btn" data-val="3" onclick="setRating(3)">★</button>
+                <button class="star-btn" data-val="4" onclick="setRating(4)">★</button>
+                <button class="star-btn" data-val="5" onclick="setRating(5)">★</button>
+              </div>
+              <span class="star-label" id="starLabel"></span>
+            </div>
+            <textarea class="form-control" id="reviewText" placeholder="Tulis pendapatmu tentang film ini..." rows="3" style="margin-bottom:14px"></textarea>
+            <button class="btn btn-primary" onclick="submitReview()">📤 Kirim Ulasan</button>
+          </div>
+        </div>
+
+        <!-- Login CTA (not logged in) -->
+        <div class="review-login-box" id="reviewLoginMsg" style="display:none">
+          <div style="font-size:2.4rem;margin-bottom:12px">🔒</div>
+          <p style="color:var(--text-muted);margin-bottom:16px;font-size:0.95rem">Masuk untuk memberikan ulasan dan rating</p>
+          <a href="login.html" class="btn btn-primary">Masuk Sekarang</a>
+        </div>
+
+        <!-- Review List -->
+        <div class="review-list" id="reviewList"></div>
+      </div>
+    </div>
+
+    <!-- ===== RIGHT: Ticket Sidebar ===== -->
+    <div class="detail-sidebar" id="ticketBoxWrap">
+      <div class="ticket-box" id="ticketBox">
+        <div class="ticket-header">
+          <h3>🎟 Beli Tiket</h3>
+          <div class="price" id="ticketPrice">-</div>
+          <div class="sub">per kursi</div>
+        </div>
+        <div class="ticket-body">
+          <!-- Date -->
+          <div style="margin-bottom:20px">
+            <p style="font-size:0.8rem;font-weight:700;color:var(--text-muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.5px">Pilih Tanggal</p>
+            <div class="date-scroll" id="dateScroll"></div>
+          </div>
+
+          <!-- Showtimes -->
+          <div style="margin-bottom:20px">
+            <p style="font-size:0.8rem;font-weight:700;color:var(--text-muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.5px">Pilih Jam</p>
+            <div class="showtime-grid" id="showtimeGrid"></div>
+          </div>
+
+          <!-- Seats -->
+          <div style="margin-bottom:20px">
+            <p style="font-size:0.8rem;font-weight:700;color:var(--text-muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.5px">Jumlah Kursi</p>
+            <div style="display:flex;gap:8px;align-items:center">
+              <button class="btn btn-ghost btn-sm" onclick="changeSeat(-1)">−</button>
+              <span id="seatCount" style="font-size:1.2rem;font-weight:800;min-width:30px;text-align:center">1</span>
+              <button class="btn btn-ghost btn-sm" onclick="changeSeat(1)">+</button>
+            </div>
+          </div>
+
+          <!-- Summary -->
+          <div class="summary-box">
+            <div class="summary-row">
+              <span>Harga Tiket</span>
+              <span id="pricePerSeat">-</span>
+            </div>
+            <div class="summary-row">
+              <span>Jumlah Kursi</span>
+              <span id="seatCountDisplay">1</span>
+            </div>
+            <div class="summary-divider"></div>
+            <div style="display:flex;justify-content:space-between;font-weight:800;font-size:1rem">
+              <span>Total</span>
+              <span style="color:var(--primary)" id="totalPrice">-</span>
+            </div>
+          </div>
+
+          <button class="btn btn-primary" style="width:100%;justify-content:center;padding:14px" id="buyBtn" onclick="openSeatModal()">
+            Pilih Kursi & Bayar
+          </button>
+
+          <div id="loginRequired" style="display:none;text-align:center;margin-top:12px;font-size:0.82rem;color:var(--text-muted)">
+            <a href="login.html" style="color:var(--primary)">Masuk</a> untuk beli tiket
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== SEAT SELECTION MODAL ======== -->
+<div class="modal-overlay" id="seatModal">
+  <div class="modal" style="max-width:600px">
+    <div class="modal-header">
+      <h3 class="modal-title">Pilih Kursi</h3>
+      <button class="modal-close" onclick="closeSeatModal()">✕</button>
+    </div>
+
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="background:var(--gradient-primary);color:var(--bg);padding:8px 48px;border-radius:8px;font-size:0.78rem;font-weight:700;display:inline-block">LAYAR</div>
+    </div>
+
+    <div class="seat-legend">
+      <div class="seat-legend-item"><div class="legend-box" style="background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.08)"></div> Tersedia</div>
+      <div class="seat-legend-item"><div class="legend-box" style="background:var(--primary)"></div> Dipilih</div>
+      <div class="seat-legend-item"><div class="legend-box" style="background:rgba(255,255,255,0.08);opacity:0.4"></div> Terisi</div>
+    </div>
+
+    <div class="seat-grid" id="seatGrid"></div>
+
+    <div style="margin-top:20px;padding:16px;background:rgba(255,255,255,0.03);border-radius:var(--radius)">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:0.88rem">
+        <span style="color:var(--text-muted)">Kursi dipilih:</span>
+        <span id="selectedSeatsDisplay" style="font-weight:700;color:var(--primary)">-</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:0.88rem">
+        <span style="color:var(--text-muted)">Total:</span>
+        <span id="seatTotalDisplay" style="font-weight:800;font-size:1rem">-</span>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" style="width:100%;justify-content:center;padding:14px;margin-top:16px" onclick="confirmPurchase()">
+      ✓ Konfirmasi Pembelian
+    </button>
+  </div>
+</div>
+
+<!-- ======== TICKET SUCCESS MODAL ======== -->
+<div class="modal-overlay" id="ticketSuccessModal">
+  <div class="modal" style="text-align:center;max-width:440px">
+    <div style="font-size:4rem;margin-bottom:16px">🎉</div>
+    <h3 style="font-size:1.4rem;font-weight:900;margin-bottom:8px;color:var(--primary)">Pembelian Berhasil!</h3>
+    <p style="color:var(--text-muted);margin-bottom:24px">Tiket kamu berhasil dibeli. Selamat menikmati filmnya!</p>
+
+    <div id="ticketDetails" style="background:rgba(0,245,212,0.05);border:1px dashed rgba(0,245,212,0.3);border-radius:var(--radius-lg);padding:24px;margin-bottom:24px;text-align:left"></div>
+
+    <div style="display:flex;gap:12px;justify-content:center">
+      <a href="profile.html" class="btn btn-primary">Lihat Tiket</a>
+      <button class="btn btn-secondary" onclick="document.getElementById('ticketSuccessModal').classList.remove('active')">Tutup</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+  /* ===== Scroll Navbar ===== */
+  window.addEventListener('scroll', () => {
+    document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+  });
+
+  /* ===== Variables ===== */
+  const params = new URLSearchParams(window.location.search);
+  const movieId = params.get('id');
+  let currentMovie = null;
+  let selectedShowtime = null;
+  let selectedDate = null;
+  let selectedSeats = [];
+  let seatCount = 1;
+
+  /* ===== Smooth Scroll Helper ===== */
+  function scrollTo(sel) {
+    const el = document.querySelector(sel);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  /* ===== LOAD MOVIE ===== */
+  function loadMovie() {
+    if (!movieId) { window.location.href = 'movies.html'; return; }
+    currentMovie = Movies.getById(movieId);
+    if (!currentMovie) { window.location.href = 'movies.html'; return; }
+
+    document.title = currentMovie.title + ' — CineMax';
+
+    // Backdrop
+    document.getElementById('backdropImg').style.backgroundImage =
+      `url('${currentMovie.backdrop || currentMovie.poster}')`;
+    document.getElementById('detailPoster').src = currentMovie.poster;
+    document.getElementById('detailPoster').alt = currentMovie.title;
+    document.getElementById('detailTitle').textContent = currentMovie.title;
+    document.getElementById('detailYear').textContent = currentMovie.year;
+    document.getElementById('detailDuration').textContent = UI.formatDuration(currentMovie.duration);
+
+    // Rating
+    const avgRating = Ratings.getAverage(currentMovie.id);
+    const movieRatings = Ratings.getByMovie(currentMovie.id);
+    document.getElementById('detailRating').textContent = avgRating || currentMovie.rating;
+    document.getElementById('detailRatingCount').textContent = `(${movieRatings.length} ulasan)`;
+    document.getElementById('reviewCountBadge').textContent = `${movieRatings.length} ulasan`;
+
+    // Genres
+    const genresEl = document.getElementById('detailGenres');
+    genresEl.innerHTML = '';
+    currentMovie.genre.forEach(g => {
+      genresEl.innerHTML += `<span class="tag tag-primary">${g}</span>`;
+    });
+
+    // Sinopsis
+    document.getElementById('detailDesc').textContent = currentMovie.description;
+
+    // ★ DIRECTOR
+    document.getElementById('directorName').textContent = currentMovie.director;
+
+    // ★ CAST
+    const castGrid = document.getElementById('castGrid');
+    castGrid.innerHTML = '';
+    if (currentMovie.cast && currentMovie.cast.length) {
+      currentMovie.cast.forEach(name => {
+        castGrid.innerHTML += `
+          <div class="cast-card">
+            <div class="cast-avatar">${name.charAt(0)}</div>
+            <div class="cast-name" title="${name}">${name}</div>
+          </div>
+        `;
+      });
+    } else {
+      castGrid.innerHTML = '<div style="padding:12px;color:var(--text-muted);font-size:0.85rem">Belum ada data pemain.</div>';
+    }
+
+    // Trailer
+    if (currentMovie.trailer) {
+      document.getElementById('trailerBox').innerHTML =
+        `<iframe src="${currentMovie.trailer}" allowfullscreen title="Trailer ${currentMovie.title}"></iframe>`;
+    } else {
+      document.getElementById('trailerSection').style.display = 'none';
+    }
+
+    // Ticket
+    document.getElementById('ticketPrice').textContent = UI.formatPrice(currentMovie.price);
+    document.getElementById('pricePerSeat').textContent = UI.formatPrice(currentMovie.price);
+    updateTotal();
+
+    loadShowtimes();
+    loadDates();
+    loadReviews();
+
+    // Auth check
+    const user = Auth.getCurrentUser();
+    if (!user) {
+      document.getElementById('reviewFormWrap').style.display = 'none';
+      document.getElementById('reviewLoginMsg').style.display = 'block';
+      document.getElementById('buyBtn').style.display = 'none';
+      document.getElementById('loginRequired').style.display = 'block';
+    } else {
+      checkWatchlist();
+      // Pre-fill existing review
+      const existing = Ratings.getUserRating(user.id, currentMovie.id);
+      if (existing) {
+        setRating(existing.rating);
+        document.getElementById('reviewText').value = existing.review || '';
+      }
+    }
+
+    // Show content
+    document.getElementById('pageLoader').style.display = 'none';
+    document.getElementById('movieBackdrop').style.display = 'block';
+    document.getElementById('detailContent').style.display = 'grid';
+  }
+
+  /* ===== DATES ===== */
+  function loadDates() {
+    const scroll = document.getElementById('dateScroll');
+    const days = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date();
+      d.setDate(d.getDate() + i);
+      const chip = document.createElement('div');
+      chip.className = 'date-chip' + (i === 0 ? ' selected' : '');
+      chip.innerHTML = `<div class="day">${days[d.getDay()]}</div><div class="num">${d.getDate()}</div>`;
+      chip.dataset.date = d.toISOString().split('T')[0];
+      chip.onclick = () => {
+        document.querySelectorAll('.date-chip').forEach(c => c.classList.remove('selected'));
+        chip.classList.add('selected');
+        selectedDate = chip.dataset.date;
+      };
+      if (i === 0) selectedDate = chip.dataset.date;
+      scroll.appendChild(chip);
+    }
+  }
+
+  /* ===== SHOWTIMES ===== */
+  function loadShowtimes() {
+    const grid = document.getElementById('showtimeGrid');
+    grid.innerHTML = '';
+    currentMovie.showtimes.forEach((t, i) => {
+      const btn = document.createElement('div');
+      btn.className = 'showtime-btn' + (i === 0 ? ' selected' : '');
+      btn.textContent = t;
+      btn.onclick = () => {
+        document.querySelectorAll('.showtime-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        selectedShowtime = t;
+      };
+      if (i === 0) selectedShowtime = t;
+      grid.appendChild(btn);
+    });
+  }
+
+  /* ===== SEAT COUNT ===== */
+  function changeSeat(delta) {
+    seatCount = Math.max(1, Math.min(8, seatCount + delta));
+    document.getElementById('seatCount').textContent = seatCount;
+    document.getElementById('seatCountDisplay').textContent = seatCount;
+    updateTotal();
+  }
+
+  function updateTotal() {
+    if (!currentMovie) return;
+    document.getElementById('totalPrice').textContent = UI.formatPrice(currentMovie.price * seatCount);
+  }
+
+  /* ===== SEAT MODAL ===== */
+  function openSeatModal() {
+    const user = Auth.getCurrentUser();
+    if (!user) { window.location.href = 'login.html'; return; }
+    if (!selectedShowtime) { UI.showToast('Pilih jam tayang dulu', 'error'); return; }
+    selectedSeats = [];
+    renderSeats();
+    document.getElementById('seatModal').classList.add('active');
+  }
+
+  function closeSeatModal() {
+    document.getElementById('seatModal').classList.remove('active');
+  }
+
+  function renderSeats() {
+    const grid = document.getElementById('seatGrid');
+    grid.innerHTML = '';
+    const rows = ['A','B','C','D','E'];
+    const taken = ['A1','A3','B5','C2','D4','E6','B2','C7'];
+    rows.forEach(row => {
+      for (let c = 1; c <= 8; c++) {
+        const id = row + c;
+        const el = document.createElement('div');
+        el.className = 'seat' + (taken.includes(id) ? ' taken' : '');
+        el.textContent = id;
+        el.dataset.id = id;
+        if (!taken.includes(id)) el.onclick = () => toggleSeat(el, id);
+        grid.appendChild(el);
+      }
+    });
+    updateSeatDisplay();
+  }
+
+  function toggleSeat(el, id) {
+    if (el.classList.contains('selected')) {
+      el.classList.remove('selected');
+      selectedSeats = selectedSeats.filter(s => s !== id);
+    } else {
+      if (selectedSeats.length >= seatCount) {
+        UI.showToast(`Maksimal ${seatCount} kursi`, 'error'); return;
+      }
+      el.classList.add('selected');
+      selectedSeats.push(id);
+    }
+    updateSeatDisplay();
+  }
+
+  function updateSeatDisplay() {
+    document.getElementById('selectedSeatsDisplay').textContent = selectedSeats.length ? selectedSeats.join(', ') : '-';
+    const total = currentMovie.price * selectedSeats.length;
+    document.getElementById('seatTotalDisplay').textContent = selectedSeats.length ? UI.formatPrice(total) : '-';
+  }
+
+  /* ===== CONFIRM PURCHASE ===== */
+  function confirmPurchase() {
+    if (!selectedSeats.length) { UI.showToast('Pilih minimal 1 kursi', 'error'); return; }
+    const user = Auth.getCurrentUser();
+
+    // Save pending order to sessionStorage and redirect to payment page
+    const pendingOrder = {
+      movieId: currentMovie.id,
+      showtime: selectedShowtime,
+      date: selectedDate,
+      seats: selectedSeats.length,
+      seatNumbers: [...selectedSeats]
+    };
+
+    sessionStorage.setItem('cinemax_pending_order', JSON.stringify(pendingOrder));
+    window.location.href = 'payment.html';
+  }
+
+  /* ===== RATING & REVIEW ===== */
+  let currentRating = 0;
+  const ratingLabels = ['', 'Buruk 😞', 'Kurang 😐', 'Cukup 🙂', 'Bagus 😊', 'Luar Biasa 🤩'];
+
+  function setRating(val) {
+    currentRating = val;
+    document.querySelectorAll('.star-btn').forEach((btn, i) => {
+      btn.classList.toggle('active', i < val);
+    });
+    const label = document.getElementById('starLabel');
+    label.textContent = ratingLabels[val] || '';
+    label.className = 'star-label' + (val > 0 ? ' show' : '');
+  }
+
+  function submitReview() {
+    const user = Auth.getCurrentUser();
+    if (!user) return;
+    if (!currentRating) { UI.showToast('Beri rating dulu ⭐', 'error'); return; }
+    const review = document.getElementById('reviewText').value.trim();
+
+    Ratings.add(user.id, currentMovie.id, currentRating, review);
+    UI.showToast('Ulasan berhasil dikirim! ✅', 'success');
+
+    currentRating = 0;
+    document.querySelectorAll('.star-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('reviewText').value = '';
+    document.getElementById('starLabel').className = 'star-label';
+
+    loadReviews();
+
+    // Update rating displays
+    const avg = Ratings.getAverage(currentMovie.id);
+    const count = Ratings.getByMovie(currentMovie.id).length;
+    document.getElementById('detailRating').textContent = avg;
+    document.getElementById('detailRatingCount').textContent = `(${count} ulasan)`;
+    document.getElementById('reviewCountBadge').textContent = `${count} ulasan`;
+  }
+
+  function loadReviews() {
+    const list = document.getElementById('reviewList');
+    const reviews = Ratings.getByMovie(movieId);
+
+    if (!reviews.length) {
+      list.innerHTML = `
+        <div class="empty-state" style="padding:48px">
+          <div class="icon">💬</div>
+          <h3>Belum ada ulasan</h3>
+          <p>Jadilah yang pertama memberikan ulasan!</p>
+        </div>
+      `;
+      return;
+    }
+
+    list.innerHTML = reviews
+      .sort((a, b) => new Date(b.date) - new Date(a.date))
+      .map(r => {
+        const date = new Date(r.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+        const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+        return `
+          <div class="review-card">
+            <div class="review-top">
+              <div class="review-user">
+                <div class="review-avatar">${(r.userName || 'U').charAt(0)}</div>
+                <div>
+                  <div class="review-name">${r.userName || 'Pengguna'}</div>
+                  <div class="review-date">${date}</div>
+                </div>
+              </div>
+              <div class="review-stars">${stars}</div>
+            </div>
+            ${r.review ? `<p class="review-body">${r.review}</p>` : ''}
+          </div>
+        `;
+      })
+      .join('');
+  }
+
+  /* ===== WATCHLIST ===== */
+  function checkWatchlist() {
+    const watchlist = Storage.get('cinemax_watchlist') || [];
+    const btn = document.getElementById('watchlistBtn');
+    if (watchlist.includes(Number(movieId))) {
+      btn.textContent = '♥ Wishlist';
+      btn.style.color = 'var(--secondary)';
+    }
+  }
+
+  function toggleWatchlist() {
+    const user = Auth.getCurrentUser();
+    if (!user) { window.location.href = 'login.html'; return; }
+    let watchlist = Storage.get('cinemax_watchlist') || [];
+    const id = Number(movieId);
+    const btn = document.getElementById('watchlistBtn');
+    if (watchlist.includes(id)) {
+      watchlist = watchlist.filter(w => w !== id);
+      btn.textContent = '♡ Wishlist';
+      btn.style.color = '';
+      UI.showToast('Dihapus dari wishlist', 'info');
+    } else {
+      watchlist.push(id);
+      btn.textContent = '♥ Wishlist';
+      btn.style.color = 'var(--secondary)';
+      UI.showToast('Ditambahkan ke wishlist! ❤', 'success');
+    }
+    Storage.set('cinemax_watchlist', watchlist);
+  }
+
+  /* ===== MODAL CLOSE ON OVERLAY ===== */
+  document.getElementById('seatModal').addEventListener('click', function(e) {
+    if (e.target === this) closeSeatModal();
+  });
+  document.getElementById('ticketSuccessModal').addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('active');
+  });
+
+  /* ===== INIT ===== */
+  document.addEventListener('DOMContentLoaded', loadMovie);
+</script>
+</body>
+</html>

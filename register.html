@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daftar Akun - CineMax</title>
+  <meta name="description" content="Daftar akun CineMax gratis dan nikmati film favorit kamu." />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    body { background: var(--bg); }
+    .auth-page {
+      min-height: 100vh;
+      display: grid; grid-template-columns: 1fr 1fr;
+    }
+
+    .auth-visual {
+      position: relative; overflow: hidden;
+      background: linear-gradient(135deg, #0A0A0F, #151520);
+    }
+
+    .auth-visual-bg {
+      position: absolute; inset: 0;
+      background-image: url('https://image.tmdb.org/t/p/original/xOMo8BRK7PfcJv9JCnx7s5hj0PX.jpg');
+      background-size: cover; background-position: center;
+      opacity: 0.35;
+    }
+
+    .auth-visual-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(0,245,212,0.1) 0%, rgba(255,0,255,0.08) 100%);
+    }
+
+    .auth-visual-content {
+      position: relative; z-index: 2;
+      display: flex; flex-direction: column; justify-content: center;
+      height: 100%; padding: 60px;
+    }
+
+    .auth-logo {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 2rem; font-weight: 900;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-decoration: none;
+      margin-bottom: 48px; display: inline-block;
+    }
+
+    .auth-tagline {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 2.4rem; font-weight: 900; line-height: 1.2;
+      margin-bottom: 20px;
+    }
+
+    .auth-tagline span {
+      background: var(--gradient-primary);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .auth-features { margin-top: 40px; display: flex; flex-direction: column; gap: 16px; }
+
+    .auth-feature {
+      display: flex; align-items: center; gap: 14px;
+      padding: 16px 20px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius);
+      backdrop-filter: blur(10px);
+    }
+
+    .auth-feature-icon {
+      width: 40px; height: 40px;
+      background: var(--gradient-primary);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; flex-shrink: 0; color: var(--bg);
+    }
+
+    .auth-feature-text { font-size: 0.9rem; color: rgba(255,255,255,0.8); }
+    .auth-feature-text strong { color: var(--text); display: block; font-size: 0.95rem; }
+
+    .auth-form-side {
+      display: flex; align-items: center; justify-content: center;
+      padding: 48px;
+      background: var(--bg);
+    }
+
+    .auth-form-wrap {
+      width: 100%; max-width: 440px;
+    }
+
+    .auth-form-title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 2rem; font-weight: 900;
+      margin-bottom: 8px;
+    }
+
+    .auth-form-sub {
+      color: var(--text-muted); font-size: 0.9rem; margin-bottom: 36px;
+    }
+
+    .auth-form-sub a { color: var(--primary); text-decoration: none; }
+    .auth-form-sub a:hover { text-decoration: underline; }
+
+    .auth-divider {
+      text-align: center; position: relative; margin: 24px 0;
+    }
+
+    .auth-divider::before {
+      content: ''; position: absolute; top: 50%; left: 0; right: 0;
+      height: 1px; background: var(--border);
+    }
+
+    .auth-divider span {
+      position: relative; background: var(--bg);
+      padding: 0 16px; color: var(--text-muted); font-size: 0.82rem;
+    }
+
+    .strength-bar {
+      height: 4px; border-radius: 2px; background: var(--border);
+      margin-top: 8px; overflow: hidden;
+    }
+
+    .strength-fill {
+      height: 100%; width: 0;
+      border-radius: 2px; transition: all 0.3s;
+    }
+
+    .terms { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 20px; }
+    .terms a { color: var(--primary); }
+
+    @media (max-width: 900px) {
+      .auth-page { grid-template-columns: 1fr; }
+      .auth-visual { display: none; }
+      .auth-form-side { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="auth-page">
+  <!-- Visual Side -->
+  <div class="auth-visual">
+    <div class="auth-visual-bg"></div>
+    <div class="auth-visual-overlay"></div>
+    <div class="auth-visual-content">
+      <a href="index.html" class="auth-logo">🎬 CineMax</a>
+      <h1 class="auth-tagline">
+        Bergabung &amp;<br>Nikmati <span>Ribuan Film</span>
+      </h1>
+      <p style="color:rgba(255,255,255,0.65);font-size:0.95rem">
+        Daftar gratis dan dapatkan akses ke film terbaik, beli tiket bioskop, dan banyak lagi.
+      </p>
+      <div class="auth-features">
+        <div class="auth-feature">
+          <div class="auth-feature-icon">🎬</div>
+          <div class="auth-feature-text">
+            <strong>Ribuan Film</strong>
+            Akses ke katalog film terlengkap
+          </div>
+        </div>
+        <div class="auth-feature">
+          <div class="auth-feature-icon">🎟</div>
+          <div class="auth-feature-text">
+            <strong>Beli Tiket Online</strong>
+            Pilih kursi dan bayar dengan mudah
+          </div>
+        </div>
+        <div class="auth-feature">
+          <div class="auth-feature-icon">⭐</div>
+          <div class="auth-feature-text">
+            <strong>Beri Ulasan</strong>
+            Bagikan pendapat tentang film
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form Side -->
+  <div class="auth-form-side">
+    <div class="auth-form-wrap">
+      <h2 class="auth-form-title">Buat Akun Baru</h2>
+      <p class="auth-form-sub">
+        Sudah punya akun? <a href="login.html">Masuk sekarang</a>
+      </p>
+
+      <form id="registerForm" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="name">Nama Lengkap</label>
+          <input type="text" id="name" name="name" class="form-control"
+            placeholder="Masukkan nama lengkap" autocomplete="name" required />
+          <div class="form-error" id="nameError"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="email">Alamat Email</label>
+          <input type="email" id="email" name="email" class="form-control"
+            placeholder="contoh@email.com" autocomplete="email" required />
+          <div class="form-error" id="emailError"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          <input type="password" id="password" name="password" class="form-control"
+            placeholder="Minimal 6 karakter" autocomplete="new-password" required />
+          <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+          <div class="form-error" id="passwordError"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="confirmPassword">Konfirmasi Password</label>
+          <input type="password" id="confirmPassword" name="confirmPassword" class="form-control"
+            placeholder="Ulangi password" autocomplete="new-password" required />
+          <div class="form-error" id="confirmError"></div>
+        </div>
+
+        <p class="terms">
+          Dengan mendaftar, kamu menyetujui <a href="#">Syarat &amp; Ketentuan</a> dan <a href="#">Kebijakan Privasi</a> CineMax.
+        </p>
+
+        <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:14px" id="registerBtn">
+          Daftar Sekarang
+        </button>
+
+        <div class="auth-divider"><span>atau</span></div>
+
+        <a href="login.html" class="btn btn-secondary" style="width:100%;justify-content:center">
+          Masuk ke Akun
+        </a>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+  // Redirect if already logged in
+  if (Auth.getCurrentUser()) window.location.href = 'index.html';
+
+  // Password strength
+  document.getElementById('password').addEventListener('input', function() {
+    const v = this.value;
+    let score = 0;
+    if (v.length >= 6) score++;
+    if (v.length >= 10) score++;
+    if (/[A-Z]/.test(v)) score++;
+    if (/[0-9]/.test(v)) score++;
+    if (/[^A-Za-z0-9]/.test(v)) score++;
+
+    const fill = document.getElementById('strengthFill');
+    const colors = ['#FF4757','#FF6B35','#FFD700','#00B4D8','#00F5D4'];
+    const widths = [20,40,60,80,100];
+    fill.style.width = widths[score-1] + '%' || '0%';
+    fill.style.background = colors[score-1] || 'transparent';
+  });
+
+  // Form submit
+  document.getElementById('registerForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    let valid = true;
+
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const confirm = document.getElementById('confirmPassword').value;
+
+    // Clear errors
+    ['nameError','emailError','passwordError','confirmError'].forEach(id => {
+      document.getElementById(id).textContent = '';
+    });
+
+    if (!name || name.length < 2) {
+      document.getElementById('nameError').textContent = 'Nama minimal 2 karakter.';
+      valid = false;
+    }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      document.getElementById('emailError').textContent = 'Masukkan email yang valid.';
+      valid = false;
+    }
+    if (!password || password.length < 6) {
+      document.getElementById('passwordError').textContent = 'Password minimal 6 karakter.';
+      valid = false;
+    }
+    if (password !== confirm) {
+      document.getElementById('confirmError').textContent = 'Password tidak cocok.';
+      valid = false;
+    }
+
+    if (!valid) return;
+
+    const btn = document.getElementById('registerBtn');
+    btn.disabled = true;
+    btn.textContent = 'Memproses...';
+
+    setTimeout(() => {
+      const result = Auth.register(name, email, password);
+      if (result.success) {
+        Auth.setCurrentUser(result.user);
+        UI.showToast('Akun berhasil dibuat! Selamat datang, ' + name + '!', 'success');
+        setTimeout(() => window.location.href = 'index.html', 1200);
+      } else {
+        document.getElementById('emailError').textContent = result.error;
+        btn.disabled = false;
+        btn.textContent = 'Daftar Sekarang';
+      }
+    }, 700);
+  });
+</script>
+</body>
+</html>

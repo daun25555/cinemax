@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Masuk - CineMax</title>
+  <meta name="description" content="Masuk ke akun CineMax kamu dan nikmati film favorit." />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .auth-page {
+      min-height: 100vh;
+      display: grid; grid-template-columns: 1fr 1fr;
+    }
+
+    .auth-visual {
+      position: relative; overflow: hidden;
+    }
+
+    .auth-visual-bg {
+      position: absolute; inset: 0;
+      background-image: url('https://image.tmdb.org/t/p/original/rLb2cwF3Pazuxaj0sRXQ037tGI1.jpg');
+      background-size: cover; background-position: center;
+      opacity: 0.35;
+    }
+
+    .auth-visual-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,0,255,0.08) 0%, rgba(0,245,212,0.08) 100%);
+    }
+
+    .auth-visual-content {
+      position: relative; z-index: 2;
+      display: flex; flex-direction: column; justify-content: center;
+      height: 100%; padding: 60px;
+    }
+
+    .auth-logo {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 2rem; font-weight: 900;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-decoration: none; margin-bottom: 48px; display: inline-block;
+    }
+
+    .auth-tagline {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 2.4rem; font-weight: 900; line-height: 1.2; margin-bottom: 16px;
+    }
+
+    .auth-tagline span {
+      background: var(--gradient-secondary);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+
+    .auth-form-side {
+      display: flex; align-items: center; justify-content: center;
+      padding: 48px; background: var(--bg);
+    }
+
+    .auth-form-wrap { width: 100%; max-width: 420px; }
+
+    .auth-form-title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 2rem; font-weight: 900; margin-bottom: 8px;
+    }
+
+    .auth-form-sub { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 36px; }
+    .auth-form-sub a { color: var(--primary); text-decoration: none; }
+    .auth-form-sub a:hover { text-decoration: underline; }
+
+    .alert-error {
+      background: rgba(255,71,87,0.1);
+      border: 1px solid rgba(255,71,87,0.3);
+      color: #FF4757; border-radius: var(--radius);
+      padding: 12px 16px; margin-bottom: 20px;
+      font-size: 0.88rem;
+      display: none;
+    }
+
+    .alert-error.show { display: block; }
+
+    .admin-hint {
+      background: rgba(0,245,212,0.05);
+      border: 1px dashed rgba(0,245,212,0.2);
+      border-radius: var(--radius);
+      padding: 14px; font-size: 0.82rem; color: var(--text-muted);
+      margin-top: 24px;
+    }
+
+    .admin-hint strong { color: var(--primary); }
+
+    .password-wrap { position: relative; }
+    .password-wrap .toggle-pw {
+      position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: var(--text-muted);
+      cursor: pointer; font-size: 1rem;
+    }
+
+    @media (max-width: 900px) {
+      .auth-page { grid-template-columns: 1fr; }
+      .auth-visual { display: none; }
+      .auth-form-side { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="auth-page">
+  <!-- Visual Side -->
+  <div class="auth-visual">
+    <div class="auth-visual-bg"></div>
+    <div class="auth-visual-overlay"></div>
+    <div class="auth-visual-content">
+      <a href="index.html" class="auth-logo">🎬 CineMax</a>
+      <h1 class="auth-tagline">
+        Selamat Datang<br>Kembali ke <span>CineMax</span>
+      </h1>
+      <p style="color:rgba(255,255,255,0.65);font-size:0.95rem;margin-bottom:40px">
+        Masuk dan lanjutkan menikmati pengalaman sinema terbaik.
+      </p>
+
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:center;gap:16px;padding:20px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px">
+          <span style="font-size:2rem">🎬</span>
+          <div>
+            <div style="font-weight:700;margin-bottom:4px">Ribuan Film</div>
+            <div style="font-size:0.82rem;color:rgba(255,255,255,0.55)">Akses katalog film lengkap</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:16px;padding:20px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px">
+          <span style="font-size:2rem">🎟</span>
+          <div>
+            <div style="font-weight:700;margin-bottom:4px">Tiket Tersimpan</div>
+            <div style="font-size:0.82rem;color:rgba(255,255,255,0.55)">Semua tiket ada di profil kamu</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form Side -->
+  <div class="auth-form-side">
+    <div class="auth-form-wrap">
+      <h2 class="auth-form-title">Masuk Akun</h2>
+      <p class="auth-form-sub">
+        Belum punya akun? <a href="register.html">Daftar gratis</a>
+      </p>
+
+      <div class="alert-error" id="loginError">Email atau password salah. Coba lagi.</div>
+
+      <form id="loginForm" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="email">Alamat Email</label>
+          <input type="email" id="email" class="form-control"
+            placeholder="contoh@email.com" autocomplete="email" required />
+          <div class="form-error" id="emailError"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          <div class="password-wrap">
+            <input type="password" id="password" class="form-control"
+              placeholder="Masukkan password" autocomplete="current-password" required
+              style="padding-right:44px" />
+            <button type="button" class="toggle-pw" onclick="togglePw()">👁</button>
+          </div>
+          <div class="form-error" id="passwordError"></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:14px;margin-top:8px" id="loginBtn">
+          Masuk
+        </button>
+      </form>
+
+
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+  if (Auth.getCurrentUser()) window.location.href = 'index.html';
+
+  function togglePw() {
+    const inp = document.getElementById('password');
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+  }
+
+  document.getElementById('loginForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const errorEl = document.getElementById('loginError');
+    errorEl.classList.remove('show');
+
+    let valid = true;
+    if (!email) { document.getElementById('emailError').textContent = 'Email wajib diisi.'; valid = false; }
+    else document.getElementById('emailError').textContent = '';
+    if (!password) { document.getElementById('passwordError').textContent = 'Password wajib diisi.'; valid = false; }
+    else document.getElementById('passwordError').textContent = '';
+    if (!valid) return;
+
+    const btn = document.getElementById('loginBtn');
+    btn.disabled = true;
+    btn.textContent = 'Memproses...';
+
+    setTimeout(() => {
+      const result = Auth.login(email, password);
+      if (result.success) {
+        UI.showToast('Selamat datang, ' + result.user.name + '!', 'success');
+        setTimeout(() => {
+          if (result.user.role === 'admin') window.location.href = 'admin.html';
+          else window.location.href = 'index.html';
+        }, 800);
+      } else {
+        errorEl.classList.add('show');
+        btn.disabled = false;
+        btn.textContent = 'Masuk';
+      }
+    }, 600);
+  });
+</script>
+</body>
+</html>

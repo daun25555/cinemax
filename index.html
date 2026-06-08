@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CineMax - Nonton Film & Beli Tiket Online</title>
+  <meta name="description" content="CineMax - Platform streaming dan pembelian tiket bioskop online terbaik di Indonesia. Temukan film terbaru dan beli tiket dengan mudah." />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* ==================== HERO ==================== */
+    .hero {
+      position: relative; height: 100vh; overflow: hidden;
+      display: flex; align-items: flex-start;
+    }
+
+    .hero-bg {
+      position: absolute; inset: 0;
+      background-image: url('https://image.tmdb.org/t/p/original/xJHokMbljvjADYdit5fK5VQsXEG.jpg');
+      background-size: cover; background-position: center top;
+      transform: scale(1.05);
+      animation: heroZoom 20s ease-in-out infinite alternate;
+    }
+
+    @keyframes heroZoom {
+      from { transform: scale(1.05); }
+      to   { transform: scale(1.12); }
+    }
+
+    .hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(
+        90deg,
+        rgba(10,10,15,0.92) 0%,
+        rgba(10,10,15,0.6) 50%,
+        transparent 100%
+      ),
+      linear-gradient(
+        0deg,
+        rgba(10,10,15,1) 0%,
+        transparent 50%
+      );
+    }
+
+    .hero-particles {
+      position: absolute; inset: 0;
+      overflow: hidden; pointer-events: none;
+    }
+
+    .particle {
+      position: absolute;
+      width: 2px; height: 2px;
+      background: var(--primary);
+      border-radius: 50%;
+      animation: float linear infinite;
+      opacity: 0;
+    }
+
+    @keyframes float {
+      0%   { transform: translateY(100vh) translateX(0); opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 1; }
+      100% { transform: translateY(-100px) translateX(60px); opacity: 0; }
+    }
+
+    .hero-content {
+      position: relative; z-index: 10;
+      padding: 140px 48px 80px;
+      max-width: 650px;
+    }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(0,245,212,0.1);
+      border: 1px solid rgba(0,245,212,0.3);
+      padding: 8px 18px; border-radius: 50px;
+      font-size: 0.82rem; font-weight: 600; color: var(--primary);
+      margin-bottom: 24px;
+      animation: slideDown 0.8s ease;
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-badge .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--primary);
+      animation: pulse 1.5s ease infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.5); opacity: 0.5; }
+    }
+
+    .hero-title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 20px;
+      animation: slideUp 0.8s ease 0.1s both;
+    }
+
+    .hero-title .gradient-text {
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-desc {
+      font-size: 1.05rem; color: rgba(255,255,255,0.75);
+      line-height: 1.7; margin-bottom: 36px;
+      animation: slideUp 0.8s ease 0.2s both;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-actions {
+      display: flex; gap: 16px; align-items: center;
+      animation: slideUp 0.8s ease 0.3s both;
+    }
+
+    .hero-meta {
+      display: flex; gap: 24px; margin-top: 40px;
+      animation: slideUp 0.8s ease 0.4s both;
+    }
+
+    .hero-meta-item {
+      text-align: center;
+    }
+
+    .hero-meta-item .num {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.8rem; font-weight: 900;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-meta-item .label {
+      font-size: 0.78rem; color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* ==================== FEATURED CAROUSEL ==================== */
+    .featured-strip {
+      position: absolute; right: 48px; bottom: 80px;
+      display: flex; flex-direction: column; gap: 12px;
+      z-index: 10; width: 200px;
+    }
+
+    .featured-strip-title {
+      font-size: 0.72rem; font-weight: 700; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 1.5px;
+    }
+
+    .featured-thumb {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px; background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      cursor: pointer; transition: all 0.25s;
+      backdrop-filter: blur(10px);
+    }
+
+    .featured-thumb:hover { background: rgba(0,245,212,0.08); border-color: rgba(0,245,212,0.3); }
+
+    .featured-thumb img {
+      width: 44px; height: 60px;
+      object-fit: cover; border-radius: 6px;
+    }
+
+    .featured-thumb-info .title { font-size: 0.82rem; font-weight: 700; }
+    .featured-thumb-info .meta { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
+
+    /* ==================== NOW PLAYING ROW ==================== */
+    .scroll-row {
+      display: flex; gap: 16px; overflow-x: auto;
+      padding-bottom: 16px; scroll-snap-type: x mandatory;
+    }
+
+    .scroll-row::-webkit-scrollbar { height: 4px; }
+
+    .scroll-row .movie-card {
+      width: 220px; min-width: 220px; max-width: 220px; flex-shrink: 0;
+      scroll-snap-align: start;
+    }
+
+    /* ==================== GENRE PILLS ==================== */
+    .genre-filters {
+      display: flex; gap: 10px; margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+
+    .genre-pill {
+      padding: 7px 20px;
+      background: rgba(255,255,255,0.05);
+      border: 1.5px solid var(--border);
+      border-radius: 50px;
+      color: var(--text-muted); font-size: 0.85rem; font-weight: 600;
+      cursor: pointer; transition: all 0.2s;
+    }
+
+    .genre-pill:hover, .genre-pill.active {
+      background: rgba(0,245,212,0.1);
+      border-color: var(--primary); color: var(--primary);
+    }
+
+    /* ==================== SEARCH BAR ==================== */
+    .search-bar-wrap {
+      padding: 0 48px 0;
+      margin-bottom: -24px;
+      position: relative; z-index: 5;
+    }
+
+    .search-bar {
+      display: flex; align-items: center;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 50px; padding: 4px 4px 4px 24px;
+      max-width: 600px;
+      box-shadow: var(--shadow);
+    }
+
+    .search-bar input {
+      flex: 1; background: none; border: none; outline: none;
+      color: var(--text); font-family: 'Inter', sans-serif; font-size: 0.9rem;
+    }
+
+    .search-bar input::placeholder { color: var(--text-muted); }
+    .search-bar button { flex-shrink: 0; }
+
+    /* ==================== PROMO BANNER ==================== */
+    .promo-banner {
+      margin: 0 48px;
+      background: linear-gradient(135deg, rgba(0,245,212,0.12), rgba(255,0,255,0.08));
+      border: 1px solid rgba(0,245,212,0.2);
+      border-radius: var(--radius-lg);
+      padding: 40px 48px;
+      display: flex; justify-content: space-between; align-items: center;
+      overflow: hidden; position: relative;
+    }
+
+    .promo-banner::before {
+      content: ''; position: absolute; top: -40px; right: -40px;
+      width: 200px; height: 200px;
+      background: radial-gradient(circle, rgba(0,245,212,0.2), transparent);
+      border-radius: 50%;
+    }
+
+    .promo-text h2 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.8rem; font-weight: 900; margin-bottom: 8px;
+    }
+
+    .promo-text p { color: var(--text-muted); font-size: 0.95rem; }
+
+    @media (max-width: 900px) {
+      .hero-content { padding: 0 20px 60px; }
+      .featured-strip { display: none; }
+      .search-bar-wrap, .promo-banner { padding: 0 20px; margin: 0 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ======== NAVBAR ======== -->
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="nav-logo">🎬 CineMax</a>
+  <ul class="nav-links">
+    <li><a href="index.html" class="active">Beranda</a></li>
+    <li><a href="movies.html">Film</a></li>
+    <li><a href="movies.html?filter=nowplaying">Tayang Sekarang</a></li>
+    <li><a href="movies.html?filter=upcoming">Segera Hadir</a></li>
+  </ul>
+  <div class="nav-right">
+    <div id="nav-admin">
+      <a href="admin.html" class="btn btn-ghost btn-sm">⚙ Admin</a>
+    </div>
+    <div id="nav-auth">
+      <a href="login.html" class="btn btn-secondary btn-sm">Masuk</a>
+      <a href="register.html" class="btn btn-primary btn-sm">Daftar</a>
+    </div>
+    <div id="nav-user" style="display:none"></div>
+  </div>
+</nav>
+
+<!-- ======== HERO ======== -->
+<section class="hero" id="hero">
+  <div class="hero-bg" id="heroBg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-particles" id="particles"></div>
+
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      Sekarang Tayang
+    </div>
+    <h1 class="hero-title" id="heroTitle">
+      Sinema Masa Depan<br>Ada di <span class="gradient-text">CineMax</span>
+    </h1>
+    <p class="hero-desc" id="heroDesc">
+      Temukan ribuan film pilihan, beli tiket dengan mudah, dan nikmati pengalaman bioskop terbaik langsung dari genggaman Anda.
+    </p>
+    <div class="hero-actions">
+      <a href="movies.html" class="btn btn-primary btn-lg" id="heroWatchBtn">
+        <span>▶</span> Jelajahi Film
+      </a>
+      <a href="#featured" class="btn btn-secondary btn-lg">Lihat Semua</a>
+    </div>
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <div class="num" id="totalMovies">--</div>
+        <div class="label">Film Tersedia</div>
+      </div>
+      <div class="hero-meta-item">
+        <div class="num">4K</div>
+        <div class="label">Kualitas Gambar</div>
+      </div>
+      <div class="hero-meta-item">
+        <div class="num">24/7</div>
+        <div class="label">Beli Tiket</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="featured-strip" id="featuredStrip">
+    <div class="featured-strip-title">Film Pilihan</div>
+  </div>
+</section>
+
+<!-- ======== SEARCH ======== -->
+<div class="search-bar-wrap" style="padding-top:48px">
+  <form class="search-bar" onsubmit="doSearch(event)">
+    <span style="color:var(--text-muted);font-size:1.1rem;margin-right:10px">🔍</span>
+    <input type="text" id="searchInput" placeholder="Cari film favorit kamu..." />
+    <button type="submit" class="btn btn-primary btn-sm">Cari</button>
+  </form>
+</div>
+
+<!-- ======== NOW PLAYING ======== -->
+<section class="section" id="featured">
+  <div class="section-header">
+    <h2 class="section-title">Sedang <span>Tayang</span></h2>
+    <a href="movies.html?filter=nowplaying" class="btn btn-ghost btn-sm">Lihat Semua →</a>
+  </div>
+  <div class="scroll-row" id="nowPlayingRow"></div>
+</section>
+
+<!-- ======== PROMO BANNER ======== -->
+<div class="promo-banner">
+  <div class="promo-text">
+    <h2>🎟 Beli Tiket Sekarang,<br>Hemat Lebih Banyak!</h2>
+    <p>Nikmati berbagai promo menarik untuk pembelian tiket online di CineMax.</p>
+  </div>
+  <a href="movies.html" class="btn btn-primary btn-lg">Beli Tiket</a>
+</div>
+
+<!-- ======== ALL MOVIES ======== -->
+<section class="section">
+  <div class="section-header">
+    <h2 class="section-title">Semua <span>Film</span></h2>
+    <a href="movies.html" class="btn btn-ghost btn-sm">Lihat Semua →</a>
+  </div>
+
+  <div class="genre-filters" id="genreFilters">
+    <div class="genre-pill active" onclick="filterGenre('all', this)">Semua</div>
+  </div>
+
+  <div class="movies-grid" id="allMoviesGrid"></div>
+</section>
+
+<!-- ======== FOOTER ======== -->
+<footer style="background:var(--card);border-top:1px solid var(--border);padding:48px;text-align:center;color:var(--text-muted);font-size:0.85rem;">
+  <a href="index.html" class="nav-logo" style="display:inline-block;margin-bottom:16px">🎬 CineMax</a>
+  <p>Platform streaming & tiket bioskop terbaik di Indonesia</p>
+  <p style="margin-top:8px;opacity:0.5">© 2024 CineMax. All rights reserved.</p>
+</footer>
+
+<script src="js/app.js"></script>
+<script>
+  // Navbar scroll effect
+  window.addEventListener('scroll', () => {
+    document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+  });
+
+  // Particles
+  const particles = document.getElementById('particles');
+  for (let i = 0; i < 15; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.cssText = `
+      left: ${Math.random() * 100}%;
+      animation-duration: ${8 + Math.random() * 12}s;
+      animation-delay: ${Math.random() * 8}s;
+      width: ${1 + Math.random() * 3}px;
+      height: ${1 + Math.random() * 3}px;
+      opacity: ${0.3 + Math.random() * 0.7};
+    `;
+    particles.appendChild(p);
+  }
+
+  // Load hero from featured movie
+  function loadHero(movies) {
+    const featured = movies.filter(m => m.featured);
+    if (!featured.length) return;
+    const movie = featured[Math.floor(Math.random() * featured.length)];
+    document.getElementById('heroBg').style.backgroundImage = `url('${movie.backdrop || movie.poster}')`;
+    document.getElementById('heroTitle').innerHTML = `${movie.title}<br>di <span class="gradient-text">CineMax</span>`;
+    document.getElementById('heroDesc').textContent = movie.description;
+    document.getElementById('heroWatchBtn').href = `movie-detail.html?id=${movie.id}`;
+    document.getElementById('totalMovies').textContent = movies.length + '+';
+  }
+
+  // Featured strip
+  function loadFeaturedStrip(movies) {
+    const strip = document.getElementById('featuredStrip');
+    const featured = movies.filter(m => m.featured).slice(0, 3);
+    featured.forEach(m => {
+      const div = document.createElement('div');
+      div.className = 'featured-thumb';
+      div.onclick = () => window.location.href = `movie-detail.html?id=${m.id}`;
+      div.innerHTML = `
+        <img src="${m.poster}" alt="${m.title}" onerror="this.src='https://via.placeholder.com/44x60/151520/00F5D4?text=?'" />
+        <div class="featured-thumb-info">
+          <div class="title">${m.title}</div>
+          <div class="meta">⭐ ${m.rating} · ${m.year}</div>
+        </div>
+      `;
+      strip.appendChild(div);
+    });
+  }
+
+  // Movie card
+  function createMovieCard(movie) {
+    const div = document.createElement('div');
+    div.className = 'movie-card fade-in';
+    div.onclick = () => window.location.href = `movie-detail.html?id=${movie.id}`;
+    const avgRating = Ratings.getAverage(movie.id);
+    const displayRating = avgRating || movie.rating;
+    div.innerHTML = `
+      <div class="movie-card-poster">
+        <img src="${movie.poster}" alt="${movie.title}" loading="lazy"
+          onerror="this.src='https://via.placeholder.com/200x300/151520/00F5D4?text=${encodeURIComponent(movie.title)}'" />
+        <div class="movie-card-overlay">
+          <button class="btn btn-primary btn-sm" style="width:100%">▶ Detail</button>
+        </div>
+        ${movie.nowPlaying ? '<span class="movie-card-badge">Tayang</span>' : ''}
+        <span class="movie-card-rating">⭐ ${displayRating}</span>
+      </div>
+      <div class="movie-card-body">
+        <div class="movie-card-title">${movie.title}</div>
+        <div class="movie-card-meta">
+          <span>${movie.year}</span>
+          <span>·</span>
+          <span>${UI.formatDuration(movie.duration)}</span>
+        </div>
+        <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
+          ${movie.genre.slice(0,2).map(g => `<span class="movie-card-genre">${g}</span>`).join('')}
+        </div>
+        <div class="movie-card-price">${UI.formatPrice(movie.price)}</div>
+      </div>
+    `;
+    return div;
+  }
+
+  // Now playing row
+  function loadNowPlaying(movies) {
+    const row = document.getElementById('nowPlayingRow');
+    row.innerHTML = '';
+    const nowPlaying = movies.filter(m => m.nowPlaying);
+    nowPlaying.forEach(m => row.appendChild(createMovieCard(m)));
+  }
+
+  // Genre filters
+  let allMoviesData = [];
+  let activeGenre = 'all';
+
+  function loadGenreFilters(movies) {
+    const genres = new Set();
+    movies.forEach(m => m.genre.forEach(g => genres.add(g)));
+    const container = document.getElementById('genreFilters');
+    genres.forEach(g => {
+      const pill = document.createElement('div');
+      pill.className = 'genre-pill';
+      pill.textContent = g;
+      pill.onclick = () => filterGenre(g, pill);
+      container.appendChild(pill);
+    });
+  }
+
+  function filterGenre(genre, el) {
+    activeGenre = genre;
+    document.querySelectorAll('.genre-pill').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    const filtered = genre === 'all' ? allMoviesData : allMoviesData.filter(m => m.genre.includes(genre));
+    loadMoviesGrid(filtered);
+  }
+
+  function loadMoviesGrid(movies) {
+    const grid = document.getElementById('allMoviesGrid');
+    grid.innerHTML = '';
+    if (!movies.length) {
+      grid.innerHTML = '<div class="empty-state"><div class="icon">🎬</div><h3>Tidak ada film ditemukan</h3></div>';
+      return;
+    }
+    movies.slice(0, 6).forEach(m => {
+      const card = createMovieCard(m);
+      grid.appendChild(card);
+    });
+    // Trigger animations
+    setTimeout(() => {
+      document.querySelectorAll('.fade-in').forEach(el => {
+        const obs = new IntersectionObserver(entries => {
+          entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+        });
+        obs.observe(el);
+      });
+    }, 50);
+  }
+
+  // Search
+  function doSearch(e) {
+    e.preventDefault();
+    const q = document.getElementById('searchInput').value.trim();
+    if (q) window.location.href = `movies.html?q=${encodeURIComponent(q)}`;
+  }
+
+  // Init
+  document.addEventListener('DOMContentLoaded', () => {
+    allMoviesData = Movies.getAll();
+    loadHero(allMoviesData);
+    loadFeaturedStrip(allMoviesData);
+    loadNowPlaying(allMoviesData);
+    loadGenreFilters(allMoviesData);
+    loadMoviesGrid(allMoviesData);
+  });
+</script>
+</body>
+</html>
