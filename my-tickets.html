@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tiket Saya - CineMax</title>
+  <meta name="description" content="Tunjukkan tiket digital ini di kasir untuk masuk ke studio bioskop CineMax." />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* ==================== TICKETS PAGE CUSTOM STYLES ==================== */
+    .tickets-page {
+      padding: 40px 48px 80px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .tickets-header {
+      background: linear-gradient(180deg, rgba(0,245,212,0.06) 0%, transparent 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 40px 0 24px;
+      margin-bottom: 40px;
+    }
+
+    .tickets-header h1 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 900;
+      margin-bottom: 6px;
+    }
+
+    .tickets-container {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    /* ---- Premium Digital Ticket Card ---- */
+    .digital-ticket {
+      display: flex;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      position: relative;
+      box-shadow: var(--shadow);
+      transition: all 0.3s;
+    }
+
+    .digital-ticket:hover {
+      border-color: rgba(0, 245, 212, 0.25);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), var(--shadow-glow);
+      transform: translateY(-4px);
+    }
+
+    /* Ticket Tear Border Left & Right */
+    .digital-ticket::before,
+    .digital-ticket::after {
+      content: '';
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      background: var(--bg);
+      border-radius: 50%;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 10;
+      border: 1px solid var(--border);
+    }
+
+    .digital-ticket::before {
+      left: -13px;
+    }
+
+    .digital-ticket::after {
+      right: -13px;
+    }
+
+    /* Left Poster Section */
+    .ticket-poster-sec {
+      width: 200px;
+      position: relative;
+      flex-shrink: 0;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .ticket-poster-sec img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Middle Details Section */
+    .ticket-main-sec {
+      flex: 1;
+      padding: 32px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-right: 2px dashed rgba(255, 255, 255, 0.08);
+      position: relative;
+    }
+
+    .ticket-main-sec .movie-title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 900;
+      margin-bottom: 12px;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .ticket-meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px 24px;
+      margin-bottom: 20px;
+    }
+
+    .ticket-meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .ticket-meta-item .lbl {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .ticket-meta-item .val {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .ticket-seats-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .ticket-seat {
+      padding: 4px 12px;
+      background: rgba(0, 245, 212, 0.1);
+      border: 1px solid rgba(0, 245, 212, 0.25);
+      color: var(--primary);
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    /* Right QR Code Section */
+    .ticket-qr-sec {
+      width: 220px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 20px;
+      background: rgba(255, 255, 255, 0.01);
+      text-align: center;
+    }
+
+    .qr-container {
+      background: white;
+      padding: 10px;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      margin-bottom: 12px;
+      display: inline-block;
+      transition: transform 0.2s;
+    }
+
+    .qr-container:hover {
+      transform: scale(1.05);
+    }
+
+    .qr-container img {
+      width: 130px;
+      height: 130px;
+      display: block;
+    }
+
+    .ticket-status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .status-confirmed {
+      background: rgba(0, 245, 212, 0.12);
+      color: var(--primary);
+      border: 1px solid rgba(0, 245, 212, 0.2);
+    }
+
+    .status-pending {
+      background: rgba(255, 215, 0, 0.1);
+      color: #FFD700;
+      border: 1px solid rgba(255, 215, 0, 0.25);
+    }
+
+    /* Expired or Cancelled */
+    .status-expired,
+    .status-cancelled {
+      background: rgba(255, 71, 87, 0.1);
+      color: #FF4757;
+      border: 1px solid rgba(255, 71, 87, 0.2);
+    }
+
+    .qr-instruction {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+      line-height: 1.4;
+    }
+
+    /* ---- Responsive Design ---- */
+    @media (max-width: 850px) {
+      .tickets-page {
+        padding: 30px 20px 60px;
+      }
+
+      .digital-ticket {
+        flex-direction: column;
+      }
+
+      .digital-ticket::before,
+      .digital-ticket::after {
+        display: none;
+      }
+
+      .ticket-poster-sec {
+        width: 100%;
+        height: 200px;
+      }
+
+      .ticket-poster-sec img {
+        object-position: center 20%;
+      }
+
+      .ticket-main-sec {
+        border-right: none;
+        border-bottom: 2px dashed rgba(255, 255, 255, 0.08);
+        padding: 24px;
+      }
+
+      .ticket-qr-sec {
+        width: 100%;
+        padding: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ======== NAVBAR ======== -->
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="nav-logo">🎬 CineMax</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Beranda</a></li>
+    <li><a href="movies.html">Film</a></li>
+    <li><a href="my-tickets.html" class="active" id="nav-my-tickets" style="display:none">🎟 Tiket Saya</a></li>
+  </ul>
+  <div class="nav-right">
+    <div id="nav-admin"><a href="admin.html" class="btn btn-ghost btn-sm">⚙ Admin</a></div>
+    <div id="nav-auth">
+      <a href="login.html" class="btn btn-secondary btn-sm">Masuk</a>
+      <a href="register.html" class="btn btn-primary btn-sm">Daftar</a>
+    </div>
+    <div id="nav-user" style="display:none"></div>
+  </div>
+</nav>
+
+<div class="page-wrapper">
+  <!-- Page Header -->
+  <div class="tickets-header">
+    <div style="max-width:1000px;margin:0 auto;padding:0 48px">
+      <h1>🎟 Tiket Saya</h1>
+      <p style="color:var(--text-muted)">Tunjukkan tiket digital ini kepada kasir/petugas di bioskop.</p>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="tickets-page">
+    <div class="tickets-container" id="ticketsList">
+      <!-- Loader -->
+      <div class="loader" id="ticketsLoader"><div class="spinner"></div></div>
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+  /* ===== Scroll Navbar ===== */
+  window.addEventListener('scroll', () => {
+    document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+  });
+
+  /* ===== Load User Tickets ===== */
+  async function loadTickets() {
+    const user = Auth.requireAuth();
+    if (!user) return;
+
+    const loader = document.getElementById('ticketsLoader');
+    const container = document.getElementById('ticketsList');
+
+    try {
+      const tickets = await Tickets.getByUser(user.id);
+      loader.style.display = 'none';
+
+      if (!tickets.length) {
+        container.innerHTML = `
+          <div class="empty-state" style="padding:80px 20px">
+            <div class="icon">🎟</div>
+            <h3>Belum ada tiket</h3>
+            <p>Kamu belum pernah membeli tiket. Jelajahi film menarik dan pesan tiket pertamamu!</p>
+            <a href="movies.html" class="btn btn-primary" style="margin-top:20px">Pesan Tiket</a>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = tickets.map(ticket => {
+        const showDateFormatted = new Date(ticket.show_date).toLocaleDateString('id-ID', {
+          weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+        });
+        
+        const showtimeFormatted = ticket.showtime || '10:00';
+        const cinemaName = ticket.cinemaName || 'Grand Indonesia XXI';
+        const studioName = ticket.studioName || 'Studio 1';
+        
+        // Generate QR Code URL via free qrserver API
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(ticket.id)}`;
+        
+        // Map status classes
+        let statusClass = 'status-pending';
+        let statusLabel = 'Pending';
+        if (ticket.status === 'confirmed') {
+          statusClass = 'status-confirmed';
+          statusLabel = 'Dikonfirmasi';
+        } else if (ticket.status === 'expired') {
+          statusClass = 'status-expired';
+          statusLabel = 'Kadaluarsa';
+        } else if (ticket.status === 'cancelled') {
+          statusClass = 'status-cancelled';
+          statusLabel = 'Dibatalkan';
+        }
+
+        const seatChips = ticket.seatNumbers.map(seat => `<div class="ticket-seat">${seat}</div>`).join('');
+
+        return `
+          <div class="digital-ticket">
+            <!-- Poster -->
+            <div class="ticket-poster-sec">
+              <img src="${ticket.movie_poster || 'https://via.placeholder.com/200x300/151520/00F5D4?text=' + encodeURIComponent(ticket.movie_title)}" alt="${ticket.movie_title}" />
+            </div>
+
+            <!-- Details -->
+            <div class="ticket-main-sec">
+              <div>
+                <h2 class="movie-title">${ticket.movie_title}</h2>
+                <div class="ticket-meta-grid">
+                  <div class="ticket-meta-item">
+                    <span class="lbl">ID Tiket</span>
+                    <span class="val" style="font-family:monospace;letter-spacing:0.5px">${ticket.id}</span>
+                  </div>
+                  <div class="ticket-meta-item">
+                    <span class="lbl">Bioskop</span>
+                    <span class="val">${cinemaName}</span>
+                  </div>
+                  <div class="ticket-meta-item">
+                    <span class="lbl">Tanggal</span>
+                    <span class="val">${showDateFormatted}</span>
+                  </div>
+                  <div class="ticket-meta-item">
+                    <span class="lbl">Studio / Jam</span>
+                    <span class="val">${studioName} · ${showtimeFormatted}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <div class="ticket-meta-item">
+                  <span class="lbl">Nomor Kursi (${ticket.seats} Kursi)</span>
+                  <div class="ticket-seats-wrap">
+                    ${seatChips}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- QR Code -->
+            <div class="ticket-qr-sec">
+              <div class="qr-container">
+                <img src="${qrUrl}" alt="QR Code" />
+              </div>
+              <span class="ticket-status-badge ${statusClass}">${statusLabel}</span>
+              <p class="qr-instruction">Tunjukkan QR code ini ke petugas bioskop untuk masuk</p>
+            </div>
+          </div>
+        `;
+      }).join('');
+    } catch (err) {
+      loader.style.display = 'none';
+      container.innerHTML = `
+        <div class="empty-state">
+          <div class="icon">⚠️</div>
+          <h3>Gagal memuat tiket</h3>
+          <p>Terjadi kesalahan pada server. Silakan coba beberapa saat lagi.</p>
+        </div>
+      `;
+      console.error(err);
+    }
+  }
+
+  /* ===== INIT ===== */
+  document.addEventListener('DOMContentLoaded', loadTickets);
+</script>
+</body>
+</html>

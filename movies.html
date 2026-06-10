@@ -84,6 +84,7 @@
     <li><a href="movies.html" class="active">Film</a></li>
     <li><a href="movies.html?filter=nowplaying">Tayang Sekarang</a></li>
     <li><a href="movies.html?filter=upcoming">Segera Hadir</a></li>
+    <li id="nav-my-tickets" style="display:none"><a href="my-tickets.html">🎟 Tiket Saya</a></li>
   </ul>
   <div class="nav-right">
     <div id="nav-admin"><a href="admin.html" class="btn btn-ghost btn-sm">⚙ Admin</a></div>
@@ -265,8 +266,8 @@
     document.getElementById(id).addEventListener('change', applyFilters);
   });
 
-  document.addEventListener('DOMContentLoaded', () => {
-    allMovies = Movies.getAll();
+  document.addEventListener('DOMContentLoaded', async () => {
+    allMovies = await Movies.init();
     applyFilters();
   });
 </script>

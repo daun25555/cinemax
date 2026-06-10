@@ -276,6 +276,7 @@
     <li><a href="movies.html">Film</a></li>
     <li><a href="movies.html?filter=nowplaying">Tayang Sekarang</a></li>
     <li><a href="movies.html?filter=upcoming">Segera Hadir</a></li>
+    <li id="nav-my-tickets" style="display:none"><a href="my-tickets.html">🎟 Tiket Saya</a></li>
   </ul>
   <div class="nav-right">
     <div id="nav-admin">
@@ -531,8 +532,8 @@
   }
 
   // Init
-  document.addEventListener('DOMContentLoaded', () => {
-    allMoviesData = Movies.getAll();
+  document.addEventListener('DOMContentLoaded', async () => {
+    allMoviesData = await Movies.init();
     loadHero(allMoviesData);
     loadFeaturedStrip(allMoviesData);
     loadNowPlaying(allMoviesData);

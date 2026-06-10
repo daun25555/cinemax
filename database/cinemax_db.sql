@@ -55,8 +55,8 @@ CREATE TABLE movies (
   rating        DECIMAL(3,1)    NOT NULL DEFAULT 0.0 COMMENT 'Rating default/IMDB (1.0 - 10.0)',
   price         INT             NOT NULL DEFAULT 0 COMMENT 'Harga per tiket dalam Rupiah',
   description   TEXT            NULL COMMENT 'Sinopsis / deskripsi film',
-  poster        VARCHAR(500)    NULL COMMENT 'URL gambar poster',
-  backdrop      VARCHAR(500)    NULL COMMENT 'URL gambar backdrop/banner',
+  poster        LONGTEXT        NULL COMMENT 'URL atau path gambar poster',
+  backdrop      LONGTEXT        NULL COMMENT 'URL atau path gambar backdrop (landscape)',
   trailer       VARCHAR(500)    NULL COMMENT 'URL embed trailer YouTube',
   director      VARCHAR(150)    NULL COMMENT 'Nama sutradara',
   featured      TINYINT(1)      NOT NULL DEFAULT 0 COMMENT 'Apakah film ditampilkan di featured/unggulan',
@@ -117,6 +117,31 @@ CREATE TABLE showtimes (
 
 
 -- ============================================================
+-- 6b. TABEL CINEMAS (Daftar Cabang Bioskop)
+-- ============================================================
+
+CREATE TABLE cinemas (
+  id          INT AUTO_INCREMENT PRIMARY KEY,
+  name        VARCHAR(100)    NOT NULL COMMENT 'Nama cabang bioskop',
+  address     VARCHAR(255)    NULL COMMENT 'Alamat lengkap cabang'
+) ENGINE=InnoDB COMMENT='Tabel cabang bioskop CineMax';
+
+
+-- ============================================================
+-- 6c. TABEL STUDIOS (Daftar Studio/Ruangan Bioskop)
+-- ============================================================
+
+CREATE TABLE studios (
+  id          INT AUTO_INCREMENT PRIMARY KEY,
+  cinema_id   INT             NOT NULL,
+  name        VARCHAR(50)     NOT NULL COMMENT 'Nama studio (contoh: Studio 1, IMAX)',
+  capacity    INT             NOT NULL DEFAULT 64 COMMENT 'Kapasitas kursi studio',
+
+  FOREIGN KEY (cinema_id) REFERENCES cinemas(id) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB COMMENT='Tabel studio bioskop CineMax';
+
+
+-- ============================================================
 -- 7. TABEL TICKETS (Data Pembelian Tiket)
 -- ============================================================
 -- Menyimpan semua transaksi pembelian tiket
@@ -125,6 +150,8 @@ CREATE TABLE tickets (
   id              VARCHAR(30)     PRIMARY KEY COMMENT 'ID Tiket unik (contoh: TIX1717900000000)',
   user_id         INT             NOT NULL COMMENT 'ID pengguna yang membeli',
   movie_id        INT             NOT NULL COMMENT 'ID film yang ditonton',
+  cinema_id       INT             DEFAULT NULL COMMENT 'ID bioskop yang dipilih',
+  studio_id       INT             DEFAULT NULL COMMENT 'ID studio yang dipilih',
   movie_title     VARCHAR(255)    NOT NULL COMMENT 'Judul film (snapshot saat beli)',
   movie_poster    VARCHAR(500)    NULL COMMENT 'URL poster (snapshot saat beli)',
   showtime        TIME            NOT NULL COMMENT 'Jam tayang yang dipilih',
@@ -137,8 +164,12 @@ CREATE TABLE tickets (
 
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (movie_id) REFERENCES movies(id) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (cinema_id) REFERENCES cinemas(id) ON DELETE SET NULL ON UPDATE CASCADE,
+  FOREIGN KEY (studio_id) REFERENCES studios(id) ON DELETE SET NULL ON UPDATE CASCADE,
   INDEX idx_tickets_user (user_id),
   INDEX idx_tickets_movie (movie_id),
+  INDEX idx_tickets_cinema (cinema_id),
+  INDEX idx_tickets_studio (studio_id),
   INDEX idx_tickets_status (status),
   INDEX idx_tickets_date (show_date)
 ) ENGINE=InnoDB COMMENT='Tabel transaksi pembelian tiket';
@@ -556,9 +587,13 @@ SELECT
   p.total_amount AS paid_amount,
   p.status AS payment_status,
   p.paid_at,
-  t.purchase_date
+  t.purchase_date,
+  c.name AS cinema_name,
+  s.name AS studio_name
 FROM users u
 JOIN tickets t ON t.user_id = u.id
+LEFT JOIN cinemas c ON t.cinema_id = c.id
+LEFT JOIN studios s ON t.studio_id = s.id
 LEFT JOIN payments p ON p.ticket_id = t.id
 ORDER BY t.purchase_date DESC;
 
@@ -577,3 +612,50 @@ GROUP BY payment_method;
 -- ============================================================
 -- SELESAI! Database CineMax siap digunakan.
 -- ============================================================
+
+-- ============================================================
+-- TAMBAHAN 20 FILM (DARI PERMINTAAN USER)
+-- ============================================================
+INSERT IGNORE INTO movies (id, title, director, year, duration, rating, price, description, poster, backdrop, trailer, now_playing, featured) VALUES
+(1, 'Dune: Part Two', 'Denis Villeneuve', 2024, 166, 8.8, 55000, 'Paul Atreides bersatu dengan Chani dan Fremen untuk merencanakan balas dendam.', 'https://image.tmdb.org/t/p/w600_and_h900_bestv2/1pdfLvkbY9ohJlCjQH2JGjjcNsV.jpg', 'https://image.tmdb.org/t/p/original/8rpDcsfLJypbO6vtecsmEZzAUdi.jpg', 'https://www.youtube.com/embed/Way9Dexny3w', 1, 1),
+(2, 'Oppenheimer', 'Christopher Nolan', 2023, 180, 8.4, 50000, 'Kisah J. Robert Oppenheimer dan perannya dalam pengembangan bom atom.', 'https://image.tmdb.org/t/p/w600_and_h900_bestv2/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg', 'https://image.tmdb.org/t/p/original/fm6KqXpk3M2HVveHwCrBSSBaO0V.jpg', 'https://www.youtube.com/embed/uYPbbksJxIg', 0, 1),
+(3, 'Spider-Man: Across the Spider-Verse', 'Joaquim Dos Santos', 2023, 140, 8.7, 45000, 'Miles Morales melintasi Multiverse untuk melindungi keberadaannya.', 'https://image.tmdb.org/t/p/w600_and_h900_bestv2/8Vt6mWEReuy4Of61Lnj5Xj704m8.jpg', 'https://image.tmdb.org/t/p/original/4HodYYKEIsGOdinkGi2Ucz6X9i0.jpg', 'https://www.youtube.com/embed/cqGjhVJWtEg', 0, 0),
+(4, 'The Batman', 'Matt Reeves', 2022, 176, 7.8, 45000, 'Saat seorang pembunuh menargetkan elit kota Gotham, Batman harus menyelidiki dunia bawah yang korup.', 'https://image.tmdb.org/t/p/w600_and_h900_bestv2/74xTEgt7R36Fpooo50r9T25onhq.jpg', 'https://image.tmdb.org/t/p/original/b0PlSNiRoMdrfUhL4pNKz6PooL.jpg', 'https://www.youtube.com/embed/mqqft2x_Aa4', 0, 0),
+(5, 'Top Gun: Maverick', 'Joseph Kosinski', 2022, 130, 8.3, 50000, 'Setelah lebih dari 30 tahun mengabdi, Pete Mitchell melatih para pilot baru.', 'https://image.tmdb.org/t/p/w600_and_h900_bestv2/62HCnUTziyWcpDaBO2i1DX17hHc.jpg', 'https://image.tmdb.org/t/p/original/AaV1YIdWKnjAIAOe8OEQi0bCEpq.jpg', 'https://www.youtube.com/embed/giXco2jaZ_4', 0, 1),
+(6, 'Avatar: The Way of Water', 'James Cameron', 2022, 192, 7.6, 60000, 'Jake Sully tinggal bersama keluarga barunya di Pandora dan berhadapan dengan ancaman lama.', 'https://image.tmdb.org/t/p/w600_and_h900_bestv2/t6HIqrNDIGGLt5VcREpzH4oWNj8.jpg', 'https://image.tmdb.org/t/p/original/s16H6tpK2utvwDtzZ8Qy4qm5Emw.jpg', 'https://www.youtube.com/embed/d9MyW72ELq0', 0, 0),
+(7, 'John Wick: Chapter 4', 'Chad Stahelski', 2023, 169, 7.7, 50000, 'John Wick menemukan jalan untuk mengalahkan The High Table.', 'https://image.tmdb.org/t/p/w600_and_h900_bestv2/vZloFAK7NmvMGKE7VkF5UHazVci.jpg', 'https://image.tmdb.org/t/p/original/7I6VUdPj6tQECNHdviJkUHD2u89.jpg', 'https://www.youtube.com/embed/qEVUtrk8_B4', 0, 0),
+(8, 'Barbie', 'Greta Gerwig', 2023, 114, 7.1, 45000, 'Barbie melakukan perjalanan ke dunia nyata untuk menemukan tujuan hidupnya.', 'https://image.tmdb.org/t/p/w600_and_h900_bestv2/iuFNMS8U5cb6xfzi51Dbkovj7vM.jpg', 'https://image.tmdb.org/t/p/original/ctMserH8g2SeOAnCw5gFjdQF8mo.jpg', 'https://www.youtube.com/embed/pBk4NYhWNMM', 0, 0),
+(9, 'Guardians of the Galaxy Vol. 3', 'James Gunn', 2023, 150, 8.0, 55000, 'Peter Quill memimpin Guardians untuk mempertahankan alam semesta.', 'https://image.tmdb.org/t/p/w600_and_h900_bestv2/r2J02Z2OpNTctfOSN1Ydgii51I3.jpg', 'https://image.tmdb.org/t/p/original/5YZbUmjbMa3ClvSW1Wj3D6XGolb.jpg', 'https://www.youtube.com/embed/u3V5KDHRQvk', 1, 0),
+(10, 'Everything Everywhere All at Once', 'Daniel Kwan', 2022, 139, 8.0, 40000, 'Seorang imigran Tiongkok terjebak dalam petualangan liar melintasi ruang angkasa.', 'https://image.tmdb.org/t/p/w600_and_h900_bestv2/w3LxiVYdWWRvEVdn5RYq6jIqkb1.jpg', 'https://image.tmdb.org/t/p/original/A001Jg9L4zEEDkYh55XqA64qFGE.jpg', 'https://www.youtube.com/embed/wxN1T1uxQ2g', 0, 0),
+(11, 'The Dark Knight', 'Christopher Nolan', 2008, 152, 9.0, 35000, 'Batman menghadapi ancaman psikologis terbesar bernama Joker.', 'https://image.tmdb.org/t/p/w600_and_h900_bestv2/qJ2tW6WMUDux911r6m7haRef0WH.jpg', 'https://image.tmdb.org/t/p/original/dqK9Hag1054tghRQSqLSfrkvQnA.jpg', 'https://www.youtube.com/embed/EXeTwQWrcwY', 0, 0),
+(12, 'Interstellar', 'Christopher Nolan', 2014, 169, 8.6, 40000, 'Sekelompok penjelajah menggunakan wormhole untuk menyelamatkan umat manusia.', 'https://image.tmdb.org/t/p/w600_and_h900_bestv2/gEU2QlsUUHXjNpebbDOvCZgBwS2.jpg', 'https://image.tmdb.org/t/p/original/rAiYTfKGqDCRIIqo664sY9XZIvQ.jpg', 'https://www.youtube.com/embed/zSWdZVtXT7E', 0, 0),
+(13, 'Parasite', 'Bong Joon Ho', 2019, 132, 8.5, 35000, 'Keluarga miskin yang menipu keluarga kaya raya agar mempekerjakan mereka.', 'https://image.tmdb.org/t/p/w600_and_h900_bestv2/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg', 'https://image.tmdb.org/t/p/original/TU9NIjwzjoKPwQHoZPhYfiN38Q.jpg', 'https://www.youtube.com/embed/5xH0HfJHsaY', 0, 0),
+(14, 'Mad Max: Fury Road', 'George Miller', 2015, 120, 8.1, 35000, 'Max bekerja sama dengan Furiosa untuk melarikan diri dari pemimpin kultus.', 'https://image.tmdb.org/t/p/w600_and_h900_bestv2/hA2ple9q4cb4gQdbzTdU98Z62iP.jpg', 'https://image.tmdb.org/t/p/original/nlCHUWjY9XWnpkOUAymQyrA4f9P.jpg', 'https://www.youtube.com/embed/hEJnMQG9ev8', 0, 0),
+(15, 'The Super Mario Bros. Movie', 'Aaron Horvath', 2023, 92, 7.8, 45000, 'Mario dan Luigi menjelajahi labirin bawah tanah untuk menyelamatkan putri.', 'https://image.tmdb.org/t/p/w600_and_h900_bestv2/qNBAXBIQlnOThrVvA6mAaqmD35P.jpg', 'https://image.tmdb.org/t/p/original/nLBRD7UPp6Gjm1p65W0vvQW2j4D.jpg', 'https://www.youtube.com/embed/TnGl01FkMMo', 1, 0),
+(16, 'Mission: Impossible - Dead Reckoning', 'Christopher McQuarrie', 2023, 163, 7.6, 55000, 'Ethan Hunt dan IMF melacak senjata menakutkan baru.', 'https://image.tmdb.org/t/p/w600_and_h900_bestv2/NNxYkU70HPurnNCSiCjYAmacwm.jpg', 'https://image.tmdb.org/t/p/original/4HodYYKEIsGOdinkGi2Ucz6X9i0.jpg', 'https://www.youtube.com/embed/avz06PDqDbM', 1, 0),
+(17, 'Spider-Man: No Way Home', 'Jon Watts', 2021, 148, 8.0, 40000, 'Peter meminta bantuan Doctor Strange, tetapi mantranya salah.', 'https://image.tmdb.org/t/p/w600_and_h900_bestv2/1g0dhYtq4irTY1H8nK2nQ9mEow8.jpg', 'https://image.tmdb.org/t/p/original/iQFcwSGbZcMBm9EpD4GZ1z1mU0d.jpg', 'https://www.youtube.com/embed/JfVOs4VSpmA', 0, 0),
+(18, 'Inception', 'Christopher Nolan', 2010, 148, 8.8, 35000, 'Seorang pencuri mencuri rahasia melalui penggunaan teknologi berbagi mimpi.', 'https://image.tmdb.org/t/p/w600_and_h900_bestv2/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg', 'https://image.tmdb.org/t/p/original/s3TBrRGB1inv7jzOu9ANNU9HqZq.jpg', 'https://www.youtube.com/embed/YoHD9XEInc0', 0, 0),
+(19, 'Joker', 'Todd Phillips', 2019, 122, 8.4, 35000, 'Arthur Fleck perlahan turun menjadi pembunuh dan sosiopat yang dikenal sebagai Joker.', 'https://image.tmdb.org/t/p/w600_and_h900_bestv2/udDclJoHjfpt8MvU0M6hL20G0vS.jpg', 'https://image.tmdb.org/t/p/original/hO7KbdvGOtDdeg0W4Y5nKeB7DCR.jpg', 'https://www.youtube.com/embed/zAGVQLHvwOY', 0, 0),
+(20, 'Avengers: Endgame', 'Anthony Russo', 2019, 181, 8.4, 45000, 'Avengers yang tersisa harus berkumpul untuk mengembalikan alam semesta.', 'https://image.tmdb.org/t/p/w600_and_h900_bestv2/or06FN3Dka5tukK1e9sl16pB3iy.jpg', 'https://image.tmdb.org/t/p/original/7RyHsO4yDXtBv1zUU3mTpHeQ0d5.jpg', 'https://www.youtube.com/embed/TcMBFSGVi1c', 0, 0);
+
+INSERT IGNORE INTO genres (id, name) VALUES (1, 'Sci-Fi'), (2, 'Adventure'), (3, 'Action'), (4, 'Drama'), (5, 'History'), (6, 'Thriller'), (7, 'Animation'), (8, 'Crime'), (9, 'Mystery'), (10, 'Fantasy'), (11, 'Comedy'), (12, 'Family');
+INSERT IGNORE INTO movie_genres (movie_id, genre_id) VALUES (1,1), (1,2), (1,3), (2,4), (2,5), (2,6), (3,7), (3,3), (3,2), (4,3), (4,8), (4,9), (5,3), (5,4), (6,1), (6,2), (6,3), (7,3), (7,6), (7,8), (8,11), (8,10), (9,1), (9,3), (9,11), (10,1), (10,3), (10,11), (11,3), (11,8), (11,4), (12,1), (12,2), (12,4), (13,6), (13,11), (13,4), (14,3), (14,2), (14,1), (15,7), (15,12), (15,2), (16,3), (16,6), (16,2), (17,3), (17,2), (17,1), (18,3), (18,1), (18,6), (19,8), (19,6), (19,4), (20,3), (20,2), (20,1);
+
+-- ---- Insert Cabang Bioskop & Studio ----
+INSERT IGNORE INTO cinemas (id, name, address) VALUES
+(1, 'Grand Indonesia XXI', 'Grand Indonesia Mall, East Mall Lt. 6, Jakarta Pusat'),
+(2, 'Pondok Indah 2 XXI', 'Pondok Indah Mall 2 Lt. 3, Jakarta Selatan'),
+(3, 'CGV Summarecon Mall Bekasi', 'Summarecon Mall Bekasi Lt. 3, Bekasi');
+
+INSERT IGNORE INTO studios (id, cinema_id, name, capacity) VALUES
+(1, 1, 'Studio 1', 64),
+(2, 1, 'Studio 2', 64),
+(3, 1, 'Studio 3', 64),
+(4, 2, 'Studio 1', 64),
+(5, 2, 'Studio 2', 64),
+(6, 2, 'Studio 3', 64),
+(7, 3, 'Studio 1', 64),
+(8, 3, 'Studio 2', 64),
+(9, 3, 'Studio 3', 64);
+
+

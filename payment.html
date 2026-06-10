@@ -1055,6 +1055,7 @@
     <li><a href="movies.html">Film</a></li>
     <li><a href="movies.html?filter=nowplaying">Tayang Sekarang</a></li>
     <li><a href="movies.html?filter=upcoming">Segera Hadir</a></li>
+    <li id="nav-my-tickets" style="display:none"><a href="my-tickets.html">🎟 Tiket Saya</a></li>
   </ul>
   <div class="nav-right">
     <div id="nav-admin"><a href="admin.html" class="btn btn-ghost btn-sm">⚙ Admin</a></div>
@@ -1142,9 +1143,14 @@
                   <span class="val" id="orderShowtime">-</span>
                 </div>
                 <div class="order-meta-row">
+                  <span class="icon-sm">🏢</span>
+                  <span>Bioskop:</span>
+                  <span class="val" id="orderCinema">-</span>
+                </div>
+                <div class="order-meta-row">
                   <span class="icon-sm">🎥</span>
                   <span>Studio:</span>
-                  <span class="val">Studio 1 — IMAX</span>
+                  <span class="val" id="orderStudio">-</span>
                 </div>
               </div>
               <div class="order-seats-visual" id="orderSeatsVisual"></div>
@@ -1437,9 +1443,11 @@
   let serviceFee = 3000;
 
   /* ===== INIT ===== */
-  function init() {
+  async function init() {
     const user = Auth.requireAuth();
     if (!user) return;
+
+    await Movies.init();
 
     // Get pending order from sessionStorage
     const pending = sessionStorage.getItem('cinemax_pending_order');
@@ -1477,6 +1485,8 @@
     document.getElementById('orderTitle').textContent = m.title;
     document.getElementById('orderDate').textContent = dateFormatted;
     document.getElementById('orderShowtime').textContent = orderData.showtime;
+    document.getElementById('orderCinema').textContent = orderData.cinemaName || 'CineMax Grand Indonesia';
+    document.getElementById('orderStudio').textContent = orderData.studioName || 'Studio 1';
 
     // Seat chips
     const seatsWrap = document.getElementById('orderSeatsVisual');
@@ -1659,7 +1669,7 @@
   }
 
   /* ===== Process Payment ===== */
-  function processPayment() {
+  async function processPayment() {
     if (!selectedPaymentMethod) {
       UI.showToast('Pilih metode pembayaran terlebih dahulu', 'error');
       return;
@@ -1682,19 +1692,20 @@
     const payBtn = document.getElementById('payBtn');
     payBtn.classList.add('processing');
 
-    // Simulate payment processing
-    setTimeout(() => {
-      // Save ticket
-      const user = Auth.getCurrentUser();
-      const ticket = Tickets.buy(
-        user.id,
-        orderData.movieId,
-        orderData.showtime,
-        orderData.date,
-        orderData.seats,
-        orderData.seatNumbers
-      );
+    // Save ticket
+    const user = Auth.getCurrentUser();
+    const ticket = await Tickets.buy(
+      user.id,
+      orderData.movieId,
+      orderData.showtime,
+      orderData.date,
+      orderData.seats,
+      orderData.seatNumbers,
+      orderData.cinemaId,
+      orderData.studioId
+    );
 
+    if (ticket) {
       // Clear timer
       clearInterval(timerInterval);
 
@@ -1703,7 +1714,10 @@
 
       // Show success
       showSuccess(ticket);
-    }, 2500);
+    } else {
+      UI.showToast('Gagal memproses pembayaran.', 'error');
+      payBtn.classList.remove('processing');
+    }
   }
 
   /* ===== Show Success ===== */
@@ -1740,8 +1754,12 @@
           <div class="r-value">${orderData.showtime}</div>
         </div>
         <div class="receipt-item">
+          <div class="r-label">Bioskop</div>
+          <div class="r-value">${orderData.cinemaName || 'CineMax Grand Indonesia'}</div>
+        </div>
+        <div class="receipt-item">
           <div class="r-label">Studio</div>
-          <div class="r-value">Studio 1 — IMAX</div>
+          <div class="r-value">${orderData.studioName || 'Studio 1'}</div>
         </div>
         <div class="receipt-item">
           <div class="r-label">Kursi</div>

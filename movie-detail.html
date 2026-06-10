@@ -398,6 +398,7 @@
   <ul class="nav-links">
     <li><a href="index.html">Beranda</a></li>
     <li><a href="movies.html" class="active">Film</a></li>
+    <li id="nav-my-tickets" style="display:none"><a href="my-tickets.html">🎟 Tiket Saya</a></li>
   </ul>
   <div class="nav-right">
     <div id="nav-admin"><a href="admin.html" class="btn btn-ghost btn-sm">⚙ Admin</a></div>
@@ -528,6 +529,22 @@
           <div class="sub">per kursi</div>
         </div>
         <div class="ticket-body">
+          <!-- Cinema Selection -->
+          <div style="margin-bottom:20px">
+            <p style="font-size:0.8rem;font-weight:700;color:var(--text-muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.5px">Pilih Bioskop</p>
+            <select class="form-control" id="cinemaSelect" onchange="onCinemaChange()" style="border-radius:var(--radius); background:rgba(255,255,255,0.05); color:var(--text); border:1.5px solid var(--border);">
+              <option value="">-- Pilih Bioskop --</option>
+            </select>
+          </div>
+
+          <!-- Studio Selection -->
+          <div style="margin-bottom:20px">
+            <p style="font-size:0.8rem;font-weight:700;color:var(--text-muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.5px">Pilih Ruangan / Studio</p>
+            <select class="form-control" id="studioSelect" onchange="onStudioChange()" style="border-radius:var(--radius); background:rgba(255,255,255,0.05); color:var(--text); border:1.5px solid var(--border);" disabled>
+              <option value="">-- Pilih Studio --</option>
+            </select>
+          </div>
+
           <!-- Date -->
           <div style="margin-bottom:20px">
             <p style="font-size:0.8rem;font-weight:700;color:var(--text-muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.5px">Pilih Tanggal</p>
@@ -648,6 +665,9 @@
   let selectedDate = null;
   let selectedSeats = [];
   let seatCount = 1;
+  let cinemas = [];
+  let selectedCinema = null;
+  let selectedStudio = null;
 
   /* ===== Smooth Scroll Helper ===== */
   function scrollTo(sel) {
@@ -721,7 +741,7 @@
     document.getElementById('pricePerSeat').textContent = UI.formatPrice(currentMovie.price);
     updateTotal();
 
-    loadShowtimes();
+    loadCinemas();
     loadDates();
     loadReviews();
 
@@ -746,6 +766,65 @@
     document.getElementById('pageLoader').style.display = 'none';
     document.getElementById('movieBackdrop').style.display = 'block';
     document.getElementById('detailContent').style.display = 'grid';
+  }
+
+  /* ===== CINEMAS & STUDIOS ===== */
+  async function loadCinemas() {
+    cinemas = await Cinemas.getAll();
+    const select = document.getElementById('cinemaSelect');
+    select.innerHTML = '<option value="">-- Pilih Bioskop --</option>';
+    cinemas.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c.id;
+      opt.textContent = c.name;
+      select.appendChild(opt);
+    });
+
+    document.getElementById('buyBtn').disabled = true;
+  }
+
+  function onCinemaChange() {
+    const val = document.getElementById('cinemaSelect').value;
+    const studioSelect = document.getElementById('studioSelect');
+    selectedCinema = cinemas.find(c => c.id == val) || null;
+    selectedStudio = null;
+    selectedShowtime = null;
+
+    document.querySelectorAll('.showtime-btn').forEach(b => b.classList.remove('selected'));
+    document.getElementById('buyBtn').disabled = true;
+
+    if (!selectedCinema) {
+      studioSelect.innerHTML = '<option value="">-- Pilih Studio --</option>';
+      studioSelect.disabled = true;
+      return;
+    }
+
+    studioSelect.innerHTML = '<option value="">-- Pilih Studio --</option>';
+    selectedCinema.studios.forEach(s => {
+      const opt = document.createElement('option');
+      opt.value = s.id;
+      opt.textContent = `${s.name} (Kapasitas: ${s.capacity} kursi)`;
+      studioSelect.appendChild(opt);
+    });
+    studioSelect.disabled = false;
+  }
+
+  function onStudioChange() {
+    const val = document.getElementById('studioSelect').value;
+    if (selectedCinema) {
+      selectedStudio = selectedCinema.studios.find(s => s.id == val) || null;
+    } else {
+      selectedStudio = null;
+    }
+    selectedShowtime = null;
+    document.querySelectorAll('.showtime-btn').forEach(b => b.classList.remove('selected'));
+    
+    if (selectedStudio) {
+      document.getElementById('buyBtn').disabled = false;
+      loadShowtimes();
+    } else {
+      document.getElementById('buyBtn').disabled = true;
+    }
   }
 
   /* ===== DATES ===== */
@@ -814,23 +893,42 @@
     document.getElementById('seatModal').classList.remove('active');
   }
 
-  function renderSeats() {
+  async function renderSeats() {
     const grid = document.getElementById('seatGrid');
-    grid.innerHTML = '';
-    const rows = ['A','B','C','D','E'];
-    const taken = ['A1','A3','B5','C2','D4','E6','B2','C7'];
-    rows.forEach(row => {
-      for (let c = 1; c <= 8; c++) {
-        const id = row + c;
-        const el = document.createElement('div');
-        el.className = 'seat' + (taken.includes(id) ? ' taken' : '');
-        el.textContent = id;
-        el.dataset.id = id;
-        if (!taken.includes(id)) el.onclick = () => toggleSeat(el, id);
-        grid.appendChild(el);
-      }
-    });
-    updateSeatDisplay();
+    grid.innerHTML = '<div class="loader" style="grid-column: 1 / -1"><div class="spinner"></div></div>';
+    
+    if (!selectedCinema || !selectedStudio || !selectedShowtime || !selectedDate) {
+      grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 20px;">Pilih bioskop, studio, tanggal, dan jam terlebih dahulu.</div>';
+      return;
+    }
+
+    try {
+      const taken = await Tickets.getOccupiedSeats(
+        currentMovie.id,
+        selectedDate,
+        selectedShowtime,
+        selectedStudio.id,
+        selectedCinema.id
+      );
+
+      grid.innerHTML = '';
+      const rows = ['A','B','C','D','E'];
+      rows.forEach(row => {
+        for (let c = 1; c <= 8; c++) {
+          const id = row + c;
+          const el = document.createElement('div');
+          el.className = 'seat' + (taken.includes(id) ? ' taken' : '');
+          el.textContent = id;
+          el.dataset.id = id;
+          if (!taken.includes(id)) el.onclick = () => toggleSeat(el, id);
+          grid.appendChild(el);
+        }
+      });
+      updateSeatDisplay();
+    } catch (err) {
+      console.error(err);
+      grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: #FF4757; padding: 20px;">Gagal memuat kursi. Silakan coba lagi.</div>';
+    }
   }
 
   function toggleSeat(el, id) {
@@ -855,6 +953,7 @@
 
   /* ===== CONFIRM PURCHASE ===== */
   function confirmPurchase() {
+    if (!selectedCinema || !selectedStudio) { UI.showToast('Pilih bioskop dan studio terlebih dahulu', 'error'); return; }
     if (!selectedSeats.length) { UI.showToast('Pilih minimal 1 kursi', 'error'); return; }
     const user = Auth.getCurrentUser();
 
@@ -864,7 +963,11 @@
       showtime: selectedShowtime,
       date: selectedDate,
       seats: selectedSeats.length,
-      seatNumbers: [...selectedSeats]
+      seatNumbers: [...selectedSeats],
+      cinemaId: selectedCinema.id,
+      cinemaName: selectedCinema.name,
+      studioId: selectedStudio.id,
+      studioName: selectedStudio.name
     };
 
     sessionStorage.setItem('cinemax_pending_order', JSON.stringify(pendingOrder));
@@ -885,13 +988,13 @@
     label.className = 'star-label' + (val > 0 ? ' show' : '');
   }
 
-  function submitReview() {
+  async function submitReview() {
     const user = Auth.getCurrentUser();
     if (!user) return;
     if (!currentRating) { UI.showToast('Beri rating dulu ⭐', 'error'); return; }
     const review = document.getElementById('reviewText').value.trim();
 
-    Ratings.add(user.id, currentMovie.id, currentRating, review);
+    await Ratings.add(user.id, currentMovie.id, currentRating, review);
     UI.showToast('Ulasan berhasil dikirim! ✅', 'success');
 
     currentRating = 0;
@@ -899,19 +1002,20 @@
     document.getElementById('reviewText').value = '';
     document.getElementById('starLabel').className = 'star-label';
 
-    loadReviews();
+    await loadReviews();
 
     // Update rating displays
     const avg = Ratings.getAverage(currentMovie.id);
-    const count = Ratings.getByMovie(currentMovie.id).length;
-    document.getElementById('detailRating').textContent = avg;
+    const reviews = await Ratings.getByMovie(currentMovie.id);
+    const count = reviews.length;
+    document.getElementById('detailRating').textContent = avg || currentMovie.rating;
     document.getElementById('detailRatingCount').textContent = `(${count} ulasan)`;
     document.getElementById('reviewCountBadge').textContent = `${count} ulasan`;
   }
 
-  function loadReviews() {
+  async function loadReviews() {
     const list = document.getElementById('reviewList');
-    const reviews = Ratings.getByMovie(movieId);
+    const reviews = await Ratings.getByMovie(movieId);
 
     if (!reviews.length) {
       list.innerHTML = `
@@ -987,7 +1091,10 @@
   });
 
   /* ===== INIT ===== */
-  document.addEventListener('DOMContentLoaded', loadMovie);
+  document.addEventListener('DOMContentLoaded', async () => {
+    await Movies.init();
+    loadMovie();
+  });
 </script>
 </body>
 </html>

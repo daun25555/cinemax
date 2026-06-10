@@ -187,7 +187,7 @@
     inp.type = inp.type === 'password' ? 'text' : 'password';
   }
 
-  document.getElementById('loginForm').addEventListener('submit', function(e) {
+  document.getElementById('loginForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
@@ -205,20 +205,18 @@
     btn.disabled = true;
     btn.textContent = 'Memproses...';
 
-    setTimeout(() => {
-      const result = Auth.login(email, password);
-      if (result.success) {
-        UI.showToast('Selamat datang, ' + result.user.name + '!', 'success');
-        setTimeout(() => {
-          if (result.user.role === 'admin') window.location.href = 'admin.html';
-          else window.location.href = 'index.html';
-        }, 800);
-      } else {
-        errorEl.classList.add('show');
-        btn.disabled = false;
-        btn.textContent = 'Masuk';
-      }
-    }, 600);
+    const result = await Auth.login(email, password);
+    if (result.success) {
+      UI.showToast('Selamat datang, ' + result.user.name + '!', 'success');
+      setTimeout(() => {
+        if (result.user.role === 'admin') window.location.href = 'admin.html';
+        else window.location.href = 'index.html';
+      }, 800);
+    } else {
+      errorEl.classList.add('show');
+      btn.disabled = false;
+      btn.textContent = 'Masuk';
+    }
   });
 </script>
 </body>

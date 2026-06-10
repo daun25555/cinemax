@@ -275,7 +275,7 @@
   });
 
   // Form submit
-  document.getElementById('registerForm').addEventListener('submit', function(e) {
+  document.getElementById('registerForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     let valid = true;
 
@@ -312,18 +312,15 @@
     btn.disabled = true;
     btn.textContent = 'Memproses...';
 
-    setTimeout(() => {
-      const result = Auth.register(name, email, password);
-      if (result.success) {
-        Auth.setCurrentUser(result.user);
-        UI.showToast('Akun berhasil dibuat! Selamat datang, ' + name + '!', 'success');
-        setTimeout(() => window.location.href = 'index.html', 1200);
-      } else {
-        document.getElementById('emailError').textContent = result.error;
-        btn.disabled = false;
-        btn.textContent = 'Daftar Sekarang';
-      }
-    }, 700);
+    const result = await Auth.register(name, email, password);
+    if (result.success) {
+      UI.showToast('Akun berhasil dibuat! Selamat datang, ' + name + '!', 'success');
+      setTimeout(() => window.location.href = 'index.html', 1200);
+    } else {
+      document.getElementById('emailError').textContent = result.error;
+      btn.disabled = false;
+      btn.textContent = 'Daftar Sekarang';
+    }
   });
 </script>
 </body>

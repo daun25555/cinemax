@@ -700,29 +700,30 @@
   }
 
   /* ===== INIT ===== */
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', async () => {
     const user = Auth.requireAdmin();
     if (!user) return;
-    loadDashboard();
+    
+    await Movies.init();
+
+    await loadDashboard();
     renderMoviesTable();
-    renderTicketsTable();
-    renderUsersTable();
-    renderReviewsTable();
+    await renderTicketsTable();
+    await renderUsersTable();
+    await renderReviewsTable();
   });
 
   /* ===== DASHBOARD ===== */
-  function loadDashboard() {
+  async function loadDashboard() {
     const movies  = Movies.getAll();
-    const tickets = Tickets.getAll();
-    const users   = Auth.getUsers();
-    const reviews = Ratings.getAll();
-    const revenue = tickets.reduce((s, t) => s + t.totalPrice, 0);
+    const statsData = await Admin.getStats();
+    const tickets = await Tickets.getAll();
 
     const stats = [
-      { ico: '🎬', num: movies.length,  label: 'Total Film' },
-      { ico: '🎟', num: tickets.length, label: 'Tiket Terjual' },
-      { ico: '👥', num: users.length,   label: 'Pengguna' },
-      { ico: '💰', num: 'Rp ' + (revenue / 1_000_000).toFixed(1) + ' JT', label: 'Total Pendapatan' },
+      { ico: '🎬', num: statsData ? statsData.movieCount : 0,  label: 'Total Film' },
+      { ico: '🎟', num: statsData ? statsData.ticketCount : 0, label: 'Tiket Terjual' },
+      { ico: '👥', num: statsData ? statsData.userCount : 0,   label: 'Pengguna' },
+      { ico: '💰', num: 'Rp ' + ((statsData ? statsData.revenue : 0) / 1_000_000).toFixed(1) + ' JT', label: 'Total Pendapatan' },
     ];
 
     const grid = document.getElementById('statsGrid');
@@ -805,8 +806,8 @@
   }
 
   /* ===== TICKETS TABLE ===== */
-  function renderTicketsTable() {
-    const tickets = Tickets.getAll();
+  async function renderTicketsTable() {
+    const tickets = await Tickets.getAll();
     const tbody = document.getElementById('ticketsTableBody');
 
     if (!tickets.length) {
@@ -815,12 +816,11 @@
     }
 
     tbody.innerHTML = tickets.slice().reverse().map(t => {
-      const user = Auth.getUsers().find(u => u.id == t.userId);
       return `
         <tr>
           <td style="font-family:monospace;font-size:0.75rem;color:var(--primary)">${t.id}</td>
           <td style="font-weight:600">${t.movieTitle}</td>
-          <td>${user?.name || 'Pengguna'}</td>
+          <td>${t.userName || 'Pengguna'}</td>
           <td>${t.date}</td>
           <td>${t.showtime}</td>
           <td style="color:var(--primary)">${t.seatNumbers?.join(', ') || t.seats + ' kursi'}</td>
@@ -831,8 +831,8 @@
   }
 
   /* ===== USERS TABLE ===== */
-  function renderUsersTable() {
-    const users = Auth.getUsers();
+  async function renderUsersTable() {
+    const users = await Admin.getUsers();
     const tbody = document.getElementById('usersTableBody');
 
     if (!users.length) {
@@ -841,9 +841,9 @@
     }
 
     tbody.innerHTML = users.map(u => {
-      const ticketCount = Tickets.getByUser(u.id).length;
-      const reviewCount = Ratings.getByUser(u.id).length;
-      const joined = new Date(u.createdAt).toLocaleDateString('id-ID');
+      const ticketCount = u.ticket_count || 0;
+      const reviewCount = u.review_count || 0;
+      const joined = new Date(u.created_at).toLocaleDateString('id-ID');
       return `
         <tr>
           <td>
@@ -862,8 +862,8 @@
   }
 
   /* ===== REVIEWS TABLE ===== */
-  function renderReviewsTable() {
-    const reviews = Ratings.getAll();
+  async function renderReviewsTable() {
+    const reviews = await Ratings.getAll();
     const tbody = document.getElementById('reviewsTableBody');
 
     if (!reviews.length) {
@@ -963,8 +963,8 @@
   function handlePosterUpload(input) {
     const file = input.files[0];
     if (!file) return;
-    if (file.size > 2 * 1024 * 1024) {
-      UI.showToast('Ukuran file poster maks 2MB!', 'error');
+    if (file.size > 1000 * 1024) {
+      UI.showToast('Ukuran file poster maks 1MB!', 'error');
       input.value = '';
       return;
     }
@@ -982,8 +982,8 @@
   function handleBackdropUpload(input) {
     const file = input.files[0];
     if (!file) return;
-    if (file.size > 3 * 1024 * 1024) {
-      UI.showToast('Ukuran file backdrop maks 3MB!', 'error');
+    if (file.size > 1000 * 1024) {
+      UI.showToast('Ukuran file backdrop maks 1MB!', 'error');
       input.value = '';
       return;
     }
@@ -1022,7 +1022,7 @@
     renderGenreTags(); renderShowtimeTags();
   }
 
-  function saveMovie() {
+  async function saveMovie() {
     const title    = document.getElementById('mTitle').value.trim();
     const director = document.getElementById('mDirector').value.trim();
     const year     = parseInt(document.getElementById('mYear').value);
@@ -1062,16 +1062,16 @@
 
     const editId = document.getElementById('editMovieId').value;
     if (editId) {
-      Movies.update(editId, movieData);
+      await Movies.update(editId, movieData);
       UI.showToast('Film berhasil diperbarui! ✅', 'success');
     } else {
-      Movies.add(movieData);
+      await Movies.add(movieData);
       UI.showToast('Film berhasil ditambahkan! ✅', 'success');
     }
 
     resetMovieForm();
     renderMoviesTable();
-    loadDashboard();
+    await loadDashboard();
     showPanel('movies', document.getElementById('nav-movies'));
   }
 
@@ -1102,12 +1102,12 @@
     showPanel('add-movie', document.getElementById('nav-add-movie'));
   }
 
-  function deleteMovie(id, title) {
+  async function deleteMovie(id, title) {
     if (!confirm(`Yakin ingin menghapus film "${title}"?`)) return;
-    Movies.delete(id);
+    await Movies.delete(id);
     UI.showToast('Film berhasil dihapus!', 'success');
     renderMoviesTable();
-    loadDashboard();
+    await loadDashboard();
   }
 </script>
 </body>

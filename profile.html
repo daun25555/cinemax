@@ -165,6 +165,7 @@
   <ul class="nav-links">
     <li><a href="index.html">Beranda</a></li>
     <li><a href="movies.html">Film</a></li>
+    <li id="nav-my-tickets" style="display:none"><a href="my-tickets.html">🎟 Tiket Saya</a></li>
   </ul>
   <div class="nav-right">
     <div id="nav-admin"><a href="admin.html" class="btn btn-ghost btn-sm">⚙ Admin</a></div>
@@ -265,7 +266,7 @@
     btn.classList.add('active');
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', async () => {
     const user = Auth.requireAuth();
     if (!user) return;
 
@@ -275,8 +276,9 @@
     document.getElementById('profileEmail').textContent = user.email;
 
     // Load data
-    const tickets = Tickets.getByUser(user.id);
-    const reviews = Ratings.getByUser(user.id);
+    await Movies.init();
+    const tickets = await Tickets.getByUser(user.id);
+    const reviews = await Ratings.getByUser(user.id);
     const wishlist = Storage.get('cinemax_watchlist') || [];
 
     document.getElementById('statTickets').textContent = tickets.length;
@@ -311,14 +313,15 @@
           <div class="ticket-details">
             <div class="ticket-title">${t.movieTitle}</div>
             <div class="ticket-info">
-              <span>📅 ${t.date}</span>
+              <span>📅 ${new Date(t.show_date).toLocaleDateString('id-ID', {day:'numeric', month:'short', year:'numeric'})}</span>
               <span>⏰ ${t.showtime}</span>
               <span>💺 ${t.seats} kursi</span>
             </div>
             <div class="ticket-seats">
               ${t.seatNumbers ? t.seatNumbers.map(s => `<span class="ticket-seat-chip">${s}</span>`).join('') : ''}
             </div>
-            <div class="ticket-id">ID: ${t.id}</div>
+            <a href="my-tickets.html" class="btn btn-primary btn-sm" style="margin-top:10px;font-size:0.75rem;padding:4px 12px">🎟 QR Code</a>
+            <div class="ticket-id" style="margin-top:8px">ID: ${t.id}</div>
           </div>
           <div class="ticket-price-col">
             <div class="price">${UI.formatPrice(t.totalPrice)}</div>
