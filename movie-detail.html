@@ -388,6 +388,12 @@
       .movie-title-hero { font-size: 1.5rem; }
       .cast-grid { grid-template-columns: 1fr; }
     }
+
+    /* FIX: Select option colors */
+    select.form-control option {
+      background-color: #1a1a2e;
+      color: var(--text);
+    }
   </style>
 </head>
 <body>
@@ -441,8 +447,8 @@
           </div>
         </div>
         <div class="movie-actions">
-          <button class="btn btn-primary btn-lg" onclick="scrollTo('#ticketBox')">🎟 Beli Tiket</button>
-          <button class="btn btn-secondary btn-lg" onclick="scrollTo('#trailerSection')">▶ Trailer</button>
+          <button class="btn btn-primary btn-lg" onclick="scrollToSection('#ticketBox')">🎟 Beli Tiket</button>
+          <button class="btn btn-secondary btn-lg" onclick="scrollToSection('#trailerSection')">▶ Trailer</button>
           <button class="btn btn-ghost btn-lg" id="watchlistBtn" onclick="toggleWatchlist()">♡ Wishlist</button>
         </div>
       </div>
@@ -609,9 +615,14 @@
       <div style="background:var(--gradient-primary);color:var(--bg);padding:8px 48px;border-radius:8px;font-size:0.78rem;font-weight:700;display:inline-block">LAYAR</div>
     </div>
 
+    <div style="display:flex;align-items:center;gap:8px;justify-content:center;margin-bottom:10px">
+      <span id="wsStatus" style="width:8px;height:8px;border-radius:50%;background:#ff4757;display:inline-block"></span>
+      <span id="wsStatusText" style="font-size:0.72rem;color:var(--text-muted)">Menghubungkan...</span>
+    </div>
     <div class="seat-legend">
       <div class="seat-legend-item"><div class="legend-box" style="background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.08)"></div> Tersedia</div>
-      <div class="seat-legend-item"><div class="legend-box" style="background:var(--primary)"></div> Dipilih</div>
+      <div class="seat-legend-item"><div class="legend-box" style="background:var(--primary)"></div> Dipilih Saya</div>
+      <div class="seat-legend-item"><div class="legend-box" style="background:#FF9F43;opacity:0.85"></div> Sedang Dipilih</div>
       <div class="seat-legend-item"><div class="legend-box" style="background:rgba(255,255,255,0.08);opacity:0.4"></div> Terisi</div>
     </div>
 
@@ -670,7 +681,7 @@
   let selectedStudio = null;
 
   /* ===== Smooth Scroll Helper ===== */
-  function scrollTo(sel) {
+  function scrollToSection(sel) {
     const el = document.querySelector(sel);
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
@@ -879,17 +890,116 @@
     document.getElementById('totalPrice').textContent = UI.formatPrice(currentMovie.price * seatCount);
   }
 
+  /* ===== REAL-TIME SEAT BOOKING (WebSocket) ===== */
+  let seatWS = null;
+  let wsClientId = null;
+  let wsLockedByOthers = {}; // seatId -> clientId
+
+  function getSessionKey() {
+    return [currentMovie.id, selectedCinema?.id, selectedStudio?.id, selectedDate, selectedShowtime].join(':');
+  }
+
+  function connectSeatWS() {
+    const user = Auth.getCurrentUser();
+    if (seatWS && seatWS.readyState === WebSocket.OPEN) {
+      seatWS.send(JSON.stringify({ type: 'join', sessionKey: getSessionKey(), userId: user?.name || 'Tamu' }));
+      return;
+    }
+
+    const wsUrl = `ws://${location.host}`;
+    seatWS = new WebSocket(wsUrl);
+
+    seatWS.onopen = () => {
+      setWSStatus(true);
+      seatWS.send(JSON.stringify({ type: 'join', sessionKey: getSessionKey(), userId: user?.name || 'Tamu' }));
+    };
+
+    seatWS.onclose = () => setWSStatus(false);
+    seatWS.onerror = () => setWSStatus(false);
+
+    seatWS.onmessage = (event) => {
+      let msg;
+      try { msg = JSON.parse(event.data); } catch { return; }
+      handleWSMessage(msg);
+    };
+  }
+
+  function setWSStatus(connected) {
+    const dot  = document.getElementById('wsStatus');
+    const text = document.getElementById('wsStatusText');
+    if (!dot || !text) return;
+    dot.style.background  = connected ? '#2ed573' : '#ff4757';
+    text.textContent      = connected ? '🔴 Real-time aktif' : 'Offline';
+  }
+
+  function handleWSMessage(msg) {
+    if (msg.type === 'state') {
+      wsLockedByOthers = {};
+      Object.entries(msg.locked).forEach(([seat, info]) => {
+        if (info.clientId !== wsClientId) wsLockedByOthers[seat] = info;
+      });
+      refreshSeatClasses();
+    } else if (msg.type === 'locked') {
+      wsLockedByOthers[msg.seatId] = { clientId: msg.clientId, userId: msg.userId };
+      refreshSeatClasses();
+    } else if (msg.type === 'unlocked') {
+      delete wsLockedByOthers[msg.seatId];
+      refreshSeatClasses();
+    } else if (msg.type === 'unlocked_many') {
+      (msg.seats || []).forEach(s => delete wsLockedByOthers[s]);
+      refreshSeatClasses();
+    } else if (msg.type === 'booked') {
+      (msg.seats || []).forEach(s => {
+        delete wsLockedByOthers[s];
+        const el = document.querySelector(`.seat[data-id="${s}"]`);
+        if (el) { el.className = 'seat taken'; el.onclick = null; }
+      });
+      if (msg.userId !== Auth.getCurrentUser()?.name) {
+        UI.showToast(`Kursi baru saja dipesan oleh ${msg.userId}`, 'info');
+      }
+    } else if (msg.type === 'lock_denied') {
+      UI.showToast('Kursi sedang dipilih orang lain', 'error');
+    }
+  }
+
+  function refreshSeatClasses() {
+    document.querySelectorAll('.seat:not(.taken)').forEach(el => {
+      const id = el.dataset.id;
+      const isSelected = selectedSeats.includes(id);
+      const isLocked = !!wsLockedByOthers[id];
+      if (isSelected) {
+        el.className = 'seat selected';
+      } else if (isLocked) {
+        el.className = 'seat locked-by-other';
+        el.title = `Sedang dipilih oleh ${wsLockedByOthers[id].userId}`;
+        el.onclick = null;
+      } else {
+        el.className = 'seat';
+        el.onclick = () => toggleSeat(el, id);
+        el.title = '';
+      }
+    });
+  }
+
   /* ===== SEAT MODAL ===== */
   function openSeatModal() {
     const user = Auth.getCurrentUser();
     if (!user) { window.location.href = 'login.html'; return; }
     if (!selectedShowtime) { UI.showToast('Pilih jam tayang dulu', 'error'); return; }
     selectedSeats = [];
+    wsLockedByOthers = {};
     renderSeats();
     document.getElementById('seatModal').classList.add('active');
   }
 
   function closeSeatModal() {
+    // Unlock all seats we had selected
+    if (seatWS && seatWS.readyState === WebSocket.OPEN) {
+      selectedSeats.forEach(seatId => {
+        seatWS.send(JSON.stringify({ type: 'unlock', sessionKey: getSessionKey(), seatId }));
+      });
+    }
+    selectedSeats = [];
     document.getElementById('seatModal').classList.remove('active');
   }
 
@@ -925,6 +1035,9 @@
         }
       });
       updateSeatDisplay();
+
+      // Connect / re-join WebSocket for this session
+      connectSeatWS();
     } catch (err) {
       console.error(err);
       grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: #FF4757; padding: 20px;">Gagal memuat kursi. Silakan coba lagi.</div>';
@@ -932,15 +1045,27 @@
   }
 
   function toggleSeat(el, id) {
+    if (el.classList.contains('locked-by-other')) {
+      UI.showToast('Kursi ini sedang dipilih orang lain', 'error'); return;
+    }
     if (el.classList.contains('selected')) {
       el.classList.remove('selected');
+      el.classList.remove('locked-by-other');
       selectedSeats = selectedSeats.filter(s => s !== id);
+      // Broadcast unlock
+      if (seatWS && seatWS.readyState === WebSocket.OPEN) {
+        seatWS.send(JSON.stringify({ type: 'unlock', sessionKey: getSessionKey(), seatId: id }));
+      }
     } else {
       if (selectedSeats.length >= seatCount) {
         UI.showToast(`Maksimal ${seatCount} kursi`, 'error'); return;
       }
       el.classList.add('selected');
       selectedSeats.push(id);
+      // Broadcast lock
+      if (seatWS && seatWS.readyState === WebSocket.OPEN) {
+        seatWS.send(JSON.stringify({ type: 'lock', sessionKey: getSessionKey(), seatId: id }));
+      }
     }
     updateSeatDisplay();
   }
@@ -955,7 +1080,15 @@
   function confirmPurchase() {
     if (!selectedCinema || !selectedStudio) { UI.showToast('Pilih bioskop dan studio terlebih dahulu', 'error'); return; }
     if (!selectedSeats.length) { UI.showToast('Pilih minimal 1 kursi', 'error'); return; }
-    const user = Auth.getCurrentUser();
+
+    // Notify all clients that these seats are now booked
+    if (seatWS && seatWS.readyState === WebSocket.OPEN) {
+      seatWS.send(JSON.stringify({
+        type: 'confirm',
+        sessionKey: getSessionKey(),
+        seats: [...selectedSeats]
+      }));
+    }
 
     // Save pending order to sessionStorage and redirect to payment page
     const pendingOrder = {
@@ -1053,33 +1186,37 @@
   }
 
   /* ===== WATCHLIST ===== */
-  function checkWatchlist() {
-    const watchlist = Storage.get('cinemax_watchlist') || [];
+  async function checkWatchlist() {
+    const user = Auth.getCurrentUser();
+    if (!user) return;
+    
+    const inWatchlist = await Watchlist.checkWatchlist(movieId);
     const btn = document.getElementById('watchlistBtn');
-    if (watchlist.includes(Number(movieId))) {
+    if (inWatchlist) {
       btn.textContent = '♥ Wishlist';
       btn.style.color = 'var(--secondary)';
     }
   }
 
-  function toggleWatchlist() {
+  async function toggleWatchlist() {
     const user = Auth.getCurrentUser();
     if (!user) { window.location.href = 'login.html'; return; }
-    let watchlist = Storage.get('cinemax_watchlist') || [];
-    const id = Number(movieId);
+    
     const btn = document.getElementById('watchlistBtn');
-    if (watchlist.includes(id)) {
-      watchlist = watchlist.filter(w => w !== id);
-      btn.textContent = '♡ Wishlist';
-      btn.style.color = '';
-      UI.showToast('Dihapus dari wishlist', 'info');
+    const res = await Watchlist.toggleWatchlist(movieId);
+    if (res.success) {
+      if (res.action === 'added') {
+        btn.textContent = '♥ Wishlist';
+        btn.style.color = 'var(--secondary)';
+        UI.showToast('Ditambahkan ke wishlist! ❤', 'success');
+      } else {
+        btn.textContent = '♡ Wishlist';
+        btn.style.color = '';
+        UI.showToast('Dihapus dari wishlist', 'info');
+      }
     } else {
-      watchlist.push(id);
-      btn.textContent = '♥ Wishlist';
-      btn.style.color = 'var(--secondary)';
-      UI.showToast('Ditambahkan ke wishlist! ❤', 'success');
+      UI.showToast(res.error || 'Terjadi kesalahan', 'error');
     }
-    Storage.set('cinemax_watchlist', watchlist);
   }
 
   /* ===== MODAL CLOSE ON OVERLAY ===== */

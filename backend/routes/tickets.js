@@ -12,10 +12,12 @@ router.get('/my', requireAuth, async (req, res) => {
   try {
     const [tickets] = await db.query(
       `SELECT t.*,
+              m.poster AS movie_poster,
               c.name AS cinema_name,
               s.name AS studio_name,
               GROUP_CONCAT(ts.seat_number ORDER BY ts.seat_number SEPARATOR ',') AS seat_numbers_str
        FROM tickets t
+       LEFT JOIN movies m  ON t.movie_id = m.id
        LEFT JOIN cinemas c ON t.cinema_id = c.id
        LEFT JOIN studios s ON t.studio_id = s.id
        LEFT JOIN ticket_seats ts ON ts.ticket_id = t.id
@@ -54,11 +56,13 @@ router.get('/all', requireAdmin, async (req, res) => {
   try {
     const [tickets] = await db.query(
       `SELECT t.*,
+              m.poster AS movie_poster,
               u.name AS user_name,
               c.name AS cinema_name,
               s.name AS studio_name,
               GROUP_CONCAT(ts.seat_number ORDER BY ts.seat_number SEPARATOR ',') AS seat_numbers_str
        FROM tickets t
+       LEFT JOIN movies m        ON t.movie_id = m.id
        LEFT JOIN users u         ON u.id  = t.user_id
        LEFT JOIN cinemas c       ON t.cinema_id = c.id
        LEFT JOIN studios s       ON t.studio_id = s.id
@@ -176,7 +180,7 @@ router.post('/buy', requireAuth, async (req, res) => {
       `INSERT INTO tickets
          (id, user_id, movie_id, cinema_id, studio_id, movie_title, movie_poster, showtime, show_date, seats, total_price, status)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'confirmed')`,
-      [ticketId, userId, movieId, cinemaId, studioId, movie.title, movie.poster, showtime, date, seats, totalPrice]
+      [ticketId, userId, movieId, cinemaId, studioId, movie.title, null, showtime, date, seats, totalPrice]
     );
 
     // Simpan nomor kursi
@@ -211,11 +215,19 @@ router.post('/buy', requireAuth, async (req, res) => {
       }
     });
   } catch (err) {
-    await conn.rollback();
+    try {
+      await conn.rollback();
+    } catch (rollbackErr) {
+      console.error('Error rolling back transaction:', rollbackErr);
+    }
     console.error('[tickets/buy]', err);
     res.status(500).json({ success: false, error: err.message });
   } finally {
-    conn.release();
+    try {
+      conn.release();
+    } catch (releaseErr) {
+      console.error('Error releasing connection:', releaseErr);
+    }
   }
 });
 

@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Film - CineMax</title>
-  <meta name="description" content="Jelajahi koleksi film terlengkap di CineMax. Filter berdasarkan genre, tahun, dan rating." />
+  <title>Wishlist - CineMax</title>
+  <meta name="description" content="Koleksi film yang kamu sukai." />
   <link rel="stylesheet" href="css/style.css" />
   <style>
     .page-header {
@@ -81,9 +81,7 @@
   <a href="index.html" class="nav-logo">🎬 CineMax</a>
   <ul class="nav-links">
     <li><a href="index.html">Beranda</a></li>
-    <li><a href="movies.html" class="active">Film</a></li>
-    <li><a href="movies.html?filter=nowplaying">Tayang Sekarang</a></li>
-    <li><a href="movies.html?filter=upcoming">Segera Hadir</a></li>
+    <li><a href="movies.html">Film</a></li>
     <li id="nav-my-tickets" style="display:none"><a href="my-tickets.html">🎟 Tiket Saya</a></li>
   </ul>
   <div class="nav-right">
@@ -98,15 +96,15 @@
 
 <div class="page-wrapper">
   <div class="page-header">
-    <h1>🎬 Jelajahi <span style="color:var(--primary)">Film</span></h1>
-    <p style="color:var(--text-muted)">Temukan film favorit kamu dari ribuan pilihan terbaik</p>
+    <h1>♡ Wishlist <span style="color:var(--primary)">Saya</span></h1>
+    <p style="color:var(--text-muted)">Daftar film-film yang telah Anda tambahkan ke daftar putar.</p>
   </div>
 
   <!-- Filters Bar -->
   <div class="filters-bar">
     <div class="search-inline">
       <span style="color:var(--text-muted)">🔍</span>
-      <input type="text" id="searchInput" placeholder="Cari film..." />
+      <input type="text" id="searchInput" placeholder="Cari di wishlist..." />
     </div>
 
     <select class="filter-select" id="genreFilter">
@@ -253,26 +251,11 @@
 
   // URL params
   const params = new URLSearchParams(window.location.search);
-  const filterParam = params.get('filter');
-
-  // Set active nav link
-  document.querySelectorAll('.nav-links a').forEach(a => {
-    a.classList.remove('active');
-    const href = a.getAttribute('href');
-    if (filterParam && href === 'movies.html?filter=' + filterParam) {
-      a.classList.add('active');
-    } else if (!filterParam && href === 'movies.html') {
-      a.classList.add('active');
-    }
-  });
-
   if (params.get('q')) {
     document.getElementById('searchInput').value = params.get('q');
   }
-  if (filterParam === 'nowplaying') {
+  if (params.get('filter') === 'nowplaying') {
     document.getElementById('statusFilter').value = 'nowplaying';
-  } else if (filterParam === 'upcoming') {
-    document.getElementById('statusFilter').value = 'upcoming';
   }
 
   // Event listeners
@@ -282,7 +265,17 @@
   });
 
   document.addEventListener('DOMContentLoaded', async () => {
-    allMovies = await Movies.init();
+    const user = Auth.requireAuth();
+    if (!user) return;
+
+    // Fetch all movies to populate details
+    const dbMovies = await Movies.init();
+    
+    // Fetch user's wishlist
+    const wishData = await Watchlist.getMyWatchlist();
+    const wishIds = wishData.map(w => w.movie_id);
+
+    allMovies = dbMovies.filter(m => wishIds.includes(m.id));
     applyFilters();
   });
 </script>

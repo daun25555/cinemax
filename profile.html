@@ -279,7 +279,8 @@
     await Movies.init();
     const tickets = await Tickets.getByUser(user.id);
     const reviews = await Ratings.getByUser(user.id);
-    const wishlist = Storage.get('cinemax_watchlist') || [];
+    const wishData = await Watchlist.getMyWatchlist();
+    const wishlist = wishData.map(w => w.movie_id);
 
     document.getElementById('statTickets').textContent = tickets.length;
     document.getElementById('statReviews').textContent = reviews.length;

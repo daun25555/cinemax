@@ -56,7 +56,7 @@ router.post('/login', async (req, res) => {
     const ADMIN_EMAIL    = 'admin@cinemax.com';
     const ADMIN_PASSWORD = 'Admin@123';
     if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-      const user  = { id: 'admin', name: 'Admin', email: ADMIN_EMAIL, role: 'admin', avatar: 'A' };
+      const user  = { id: 1, name: 'Admin', email: ADMIN_EMAIL, role: 'admin', avatar: 'A' };
       const token = generateToken(user);
       return res.json({ success: true, user, token });
     }

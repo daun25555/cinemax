@@ -272,7 +272,31 @@ const Admin = {
 };
 
 // ============================================================
-// Storage (kompatibilitas untuk watchlist & session)
+// Watchlist
+// ============================================================
+const Watchlist = {
+  getMyWatchlist: async () => {
+    try {
+      const res = await _api.get('/watchlist/my');
+      return res.success ? res.data : [];
+    } catch (e) { return []; }
+  },
+  toggleWatchlist: async (movieId) => {
+    try {
+      const res = await _api.post('/watchlist/toggle', { movieId });
+      return res;
+    } catch (e) { return { success: false, error: 'Network error' }; }
+  },
+  checkWatchlist: async (movieId) => {
+    try {
+      const res = await _api.get('/watchlist/check/' + movieId);
+      return res.success ? res.inWatchlist : false;
+    } catch (e) { return false; }
+  }
+};
+
+// ============================================================
+// Storage (kompatibilitas untuk session)
 // ============================================================
 const Storage = {
   get:    (key) => JSON.parse(localStorage.getItem(key) || 'null'),
@@ -290,6 +314,17 @@ const UI = {
     const navAuth = document.getElementById('nav-auth');
     const navAdmin = document.getElementById('nav-admin');
     const navMyTickets = document.getElementById('nav-my-tickets');
+    
+    // Auto-inject wishlist nav item if not exists
+    const navLinks = document.querySelector('.nav-links');
+    if (navLinks && !document.getElementById('nav-wishlist')) {
+      const li = document.createElement('li');
+      li.id = 'nav-wishlist';
+      li.style.display = 'none';
+      li.innerHTML = '<a href="wishlist.html">♡ Wishlist</a>';
+      navLinks.appendChild(li);
+    }
+    const navWishlist = document.getElementById('nav-wishlist');
 
     if (navUser && navAuth) {
       if (user) {
@@ -304,11 +339,13 @@ const UI = {
         navAuth.style.display  = 'none';
         if (navAdmin) navAdmin.style.display = user.role === 'admin' ? 'flex' : 'none';
         if (navMyTickets) navMyTickets.style.display = 'block';
+        if (navWishlist) navWishlist.style.display = 'block';
       } else {
         navUser.style.display  = 'none';
         navAuth.style.display  = 'flex';
         if (navAdmin) navAdmin.style.display = 'none';
         if (navMyTickets) navMyTickets.style.display = 'none';
+        if (navWishlist) navWishlist.style.display = 'none';
       }
     }
   },

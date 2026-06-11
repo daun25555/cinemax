@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,7 +8,9 @@
   <link rel="stylesheet" href="css/style.css" />
   <style>
     /* ===== RESET FOR ADMIN ===== */
-    body { overflow-x: hidden; }
+    body {
+      overflow-x: hidden;
+    }
 
     /* ===== LAYOUT ===== */
     .admin-wrap {
@@ -24,7 +27,8 @@
       display: flex;
       flex-direction: column;
       position: fixed;
-      top: 0; left: 0;
+      top: 0;
+      left: 0;
       height: 100vh;
       overflow-y: auto;
       z-index: 200;
@@ -38,7 +42,8 @@
 
     .sidebar-logo .brand {
       font-family: 'Montserrat', sans-serif;
-      font-size: 1.3rem; font-weight: 900;
+      font-size: 1.3rem;
+      font-weight: 900;
       background: var(--gradient-primary);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -53,35 +58,52 @@
       margin-top: 3px;
     }
 
-    .sidebar-nav { padding: 12px 10px; flex: 1; }
+    .sidebar-nav {
+      padding: 12px 10px;
+      flex: 1;
+    }
 
     .nav-label {
-      font-size: 0.62rem; font-weight: 700;
-      color: rgba(255,255,255,0.28);
-      text-transform: uppercase; letter-spacing: 1.5px;
+      font-size: 0.62rem;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.28);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
       padding: 10px 12px 6px;
     }
 
     .nav-item {
-      display: flex; align-items: center; gap: 11px;
-      padding: 10px 13px; border-radius: 10px;
-      color: var(--text-muted); font-size: 0.875rem; font-weight: 500;
-      cursor: pointer; transition: all 0.2s; margin-bottom: 2px;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 10px 13px;
+      border-radius: 10px;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 2px;
       text-decoration: none;
     }
 
     .nav-item:hover {
-      background: rgba(255,255,255,0.06);
+      background: rgba(255, 255, 255, 0.06);
       color: var(--text);
     }
 
     .nav-item.active {
-      background: rgba(0,245,212,0.12);
+      background: rgba(0, 245, 212, 0.12);
       color: var(--primary);
       font-weight: 600;
     }
 
-    .nav-item .ico { width: 18px; text-align: center; flex-shrink: 0; font-size: 1rem; }
+    .nav-item .ico {
+      width: 18px;
+      text-align: center;
+      flex-shrink: 0;
+      font-size: 1rem;
+    }
 
     .sidebar-foot {
       padding: 16px 20px;
@@ -89,23 +111,38 @@
     }
 
     .user-chip {
-      display: flex; align-items: center; gap: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
       padding: 10px 12px;
-      background: rgba(255,255,255,0.04);
+      background: rgba(255, 255, 255, 0.04);
       border-radius: 10px;
       margin-bottom: 12px;
     }
 
     .user-chip .avatar {
-      width: 34px; height: 34px; border-radius: 50%;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
       background: var(--gradient-primary);
-      display: flex; align-items: center; justify-content: center;
-      color: var(--bg); font-weight: 800; font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--bg);
+      font-weight: 800;
+      font-size: 0.85rem;
       flex-shrink: 0;
     }
 
-    .user-chip .info .name { font-size: 0.85rem; font-weight: 700; }
-    .user-chip .info .mail { font-size: 0.7rem; color: var(--text-muted); }
+    .user-chip .info .name {
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .user-chip .info .mail {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
 
     /* ===== MAIN CONTENT ===== */
     .admin-main {
@@ -118,26 +155,43 @@
 
     /* ===== TOPBAR ===== */
     .topbar {
-      display: flex; justify-content: space-between; align-items: center;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       padding: 20px 32px;
       border-bottom: 1px solid var(--border);
-      background: rgba(10,10,15,0.8);
+      background: rgba(10, 10, 15, 0.8);
       backdrop-filter: blur(12px);
-      position: sticky; top: 0; z-index: 100;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
 
     .topbar-title {
       font-family: 'Montserrat', sans-serif;
-      font-size: 1.4rem; font-weight: 900;
+      font-size: 1.4rem;
+      font-weight: 900;
     }
 
-    .topbar-sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+    .topbar-sub {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
 
     /* ===== CONTENT PANELS ===== */
-    .content { padding: 28px 32px; flex: 1; }
+    .content {
+      padding: 28px 32px;
+      flex: 1;
+    }
 
-    .panel { display: none; }
-    .panel.active { display: block; }
+    .panel {
+      display: none;
+    }
+
+    .panel.active {
+      display: block;
+    }
 
     /* ===== STATS ===== */
     .stats-grid {
@@ -158,31 +212,42 @@
     }
 
     .stat-card:hover {
-      border-color: rgba(0,245,212,0.25);
+      border-color: rgba(0, 245, 212, 0.25);
       transform: translateY(-3px);
-      box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
     }
 
     .stat-card::after {
       content: '';
-      position: absolute; top: -20px; right: -20px;
-      width: 80px; height: 80px;
-      background: radial-gradient(circle, rgba(0,245,212,0.12), transparent);
+      position: absolute;
+      top: -20px;
+      right: -20px;
+      width: 80px;
+      height: 80px;
+      background: radial-gradient(circle, rgba(0, 245, 212, 0.12), transparent);
       border-radius: 50%;
     }
 
-    .stat-icon { font-size: 1.8rem; margin-bottom: 10px; }
+    .stat-icon {
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+    }
 
     .stat-num {
       font-family: 'Montserrat', sans-serif;
-      font-size: 2rem; font-weight: 900;
+      font-size: 2rem;
+      font-weight: 900;
       background: var(--gradient-primary);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
 
-    .stat-label { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
 
     /* ===== DASHBOARD ROWS ===== */
     .dash-row {
@@ -199,23 +264,30 @@
     }
 
     .dash-box-title {
-      font-size: 0.9rem; font-weight: 700;
+      font-size: 0.9rem;
+      font-weight: 700;
       margin-bottom: 14px;
       padding-bottom: 12px;
       border-bottom: 1px solid var(--border);
     }
 
     .dash-item {
-      display: flex; align-items: center; gap: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
       padding: 10px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
     }
 
-    .dash-item:last-child { border-bottom: none; }
+    .dash-item:last-child {
+      border-bottom: none;
+    }
 
     .dash-item img {
-      width: 38px; height: 54px;
-      object-fit: cover; border-radius: 6px;
+      width: 38px;
+      height: 54px;
+      object-fit: cover;
+      border-radius: 6px;
       flex-shrink: 0;
       background: var(--border);
     }
@@ -229,47 +301,70 @@
     }
 
     .admin-tbl {
-      width: 100%; border-collapse: collapse;
+      width: 100%;
+      border-collapse: collapse;
     }
 
     .admin-tbl th {
-      background: rgba(255,255,255,0.03);
-      padding: 13px 18px; text-align: left;
-      font-size: 0.75rem; font-weight: 700;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 13px 18px;
+      text-align: left;
+      font-size: 0.75rem;
+      font-weight: 700;
       color: var(--text-muted);
-      text-transform: uppercase; letter-spacing: 0.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
       border-bottom: 1px solid var(--border);
     }
 
     .admin-tbl td {
       padding: 13px 18px;
       font-size: 0.85rem;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
       vertical-align: middle;
     }
 
-    .admin-tbl tr:last-child td { border-bottom: none; }
-    .admin-tbl tr:hover td { background: rgba(255,255,255,0.025); }
+    .admin-tbl tr:last-child td {
+      border-bottom: none;
+    }
+
+    .admin-tbl tr:hover td {
+      background: rgba(255, 255, 255, 0.025);
+    }
 
     .tbl-movie-cell {
-      display: flex; align-items: center; gap: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
 
     .tbl-movie-cell img {
-      width: 38px; height: 54px;
-      object-fit: cover; border-radius: 6px;
-      flex-shrink: 0; background: var(--border);
+      width: 38px;
+      height: 54px;
+      object-fit: cover;
+      border-radius: 6px;
+      flex-shrink: 0;
+      background: var(--border);
     }
 
     /* ===== BADGE PILLS ===== */
     .pill {
       display: inline-block;
-      padding: 3px 10px; border-radius: 20px;
-      font-size: 0.72rem; font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 700;
     }
 
-    .pill-now { background: rgba(0,245,212,0.12); color: var(--primary); }
-    .pill-arch { background: rgba(255,255,255,0.07); color: var(--text-muted); }
+    .pill-now {
+      background: rgba(0, 245, 212, 0.12);
+      color: var(--primary);
+    }
+
+    .pill-arch {
+      background: rgba(255, 255, 255, 0.07);
+      color: var(--text-muted);
+    }
 
     /* ===== MOVIE FORM ===== */
     .form-card {
@@ -280,454 +375,564 @@
     }
 
     .form-card-title {
-      font-size: 1rem; font-weight: 700;
+      font-size: 1rem;
+      font-weight: 700;
       margin-bottom: 22px;
       padding-bottom: 14px;
       border-bottom: 1px solid var(--border);
     }
 
-    .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-    .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; }
+    .form-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
 
-    .genre-wrap, .showtime-wrap {
-      display: flex; flex-wrap: wrap; gap: 7px; margin-top: 8px;
+    .form-grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 18px;
+    }
+
+    .genre-wrap,
+    .showtime-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 8px;
     }
 
     .genre-chip {
-      display: flex; align-items: center; gap: 5px;
-      background: rgba(0,245,212,0.1);
-      border: 1px solid rgba(0,245,212,0.2);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(0, 245, 212, 0.1);
+      border: 1px solid rgba(0, 245, 212, 0.2);
       color: var(--primary);
-      padding: 3px 10px; border-radius: 20px; font-size: 0.78rem;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.78rem;
     }
 
     .genre-chip button {
-      background: none; border: none; color: var(--primary);
-      cursor: pointer; font-size: 0.8rem; line-height: 1; padding: 0;
+      background: none;
+      border: none;
+      color: var(--primary);
+      cursor: pointer;
+      font-size: 0.8rem;
+      line-height: 1;
+      padding: 0;
     }
 
     .showtime-chip {
-      display: flex; align-items: center; gap: 5px;
-      background: rgba(255,0,255,0.1);
-      border: 1px solid rgba(255,0,255,0.2);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(255, 0, 255, 0.1);
+      border: 1px solid rgba(255, 0, 255, 0.2);
       color: var(--secondary);
-      padding: 3px 10px; border-radius: 20px; font-size: 0.78rem;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.78rem;
     }
 
     .showtime-chip button {
-      background: none; border: none; color: var(--secondary);
-      cursor: pointer; font-size: 0.8rem; line-height: 1; padding: 0;
+      background: none;
+      border: none;
+      color: var(--secondary);
+      cursor: pointer;
+      font-size: 0.8rem;
+      line-height: 1;
+      padding: 0;
     }
 
     .poster-preview {
-      width: 100px; height: 150px;
-      border-radius: var(--radius); object-fit: cover;
+      width: 100px;
+      height: 150px;
+      border-radius: var(--radius);
+      object-fit: cover;
       border: 2px dashed var(--border);
-      margin-top: 8px; display: none;
+      margin-top: 8px;
+      display: none;
     }
 
-    .poster-tab.active, .backdrop-tab.active {
-      background: rgba(0,245,212,0.15) !important;
+    .poster-tab.active,
+    .backdrop-tab.active {
+      background: rgba(0, 245, 212, 0.15) !important;
       border-color: var(--primary) !important;
       color: var(--primary) !important;
     }
 
     /* ===== TOOLBAR ===== */
     .panel-toolbar {
-      display: flex; justify-content: space-between; align-items: center;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       margin-bottom: 18px;
     }
 
     /* ===== MOBILE TOGGLE ===== */
     .sidebar-toggle {
       display: none;
-      background: rgba(255,255,255,0.08);
+      background: rgba(255, 255, 255, 0.08);
       border: 1px solid var(--border);
-      color: var(--text); cursor: pointer;
-      padding: 8px 12px; border-radius: var(--radius);
+      color: var(--text);
+      cursor: pointer;
+      padding: 8px 12px;
+      border-radius: var(--radius);
       font-size: 1.1rem;
     }
 
     .sidebar-overlay {
-      display: none; position: fixed; inset: 0;
-      background: rgba(0,0,0,0.6); z-index: 150;
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 150;
     }
 
     /* ===== RESPONSIVE ===== */
     @media (max-width: 1200px) {
-      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
     }
 
     @media (max-width: 900px) {
-      .sidebar { transform: translateX(-100%); }
-      .sidebar.open { transform: translateX(0); }
-      .sidebar-overlay.open { display: block; }
-      .admin-main { margin-left: 0; }
-      .sidebar-toggle { display: inline-flex; align-items: center; gap: 6px; }
-      .topbar { padding: 16px 20px; }
-      .content { padding: 20px; }
-      .dash-row { grid-template-columns: 1fr; }
-      .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; }
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .sidebar-overlay.open {
+        display: block;
+      }
+
+      .admin-main {
+        margin-left: 0;
+      }
+
+      .sidebar-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .topbar {
+        padding: 16px 20px;
+      }
+
+      .content {
+        padding: 20px;
+      }
+
+      .dash-row {
+        grid-template-columns: 1fr;
+      }
+
+      .form-grid-2,
+      .form-grid-3 {
+        grid-template-columns: 1fr;
+      }
     }
 
     @media (max-width: 600px) {
-      .stats-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
-      .topbar-title { font-size: 1.1rem; }
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      .topbar-title {
+        font-size: 1.1rem;
+      }
     }
   </style>
 </head>
+
 <body>
 
-<!-- Sidebar Overlay (mobile) -->
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+  <!-- Sidebar Overlay (mobile) -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
-<div class="admin-wrap">
+  <div class="admin-wrap">
 
-  <!-- ===== SIDEBAR ===== -->
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-logo">
-      <div class="brand">🎬 CineMax</div>
-      <div class="sub">Admin Dashboard</div>
-    </div>
-
-    <nav class="sidebar-nav">
-      <div class="nav-label">Menu Utama</div>
-
-      <div class="nav-item active" id="nav-dashboard" onclick="showPanel('dashboard', this)">
-        <span class="ico">📊</span> Dashboard
-      </div>
-      <div class="nav-item" id="nav-movies" onclick="showPanel('movies', this)">
-        <span class="ico">🎬</span> Kelola Film
-      </div>
-      <div class="nav-item" id="nav-add-movie" onclick="showPanel('add-movie', this)">
-        <span class="ico">➕</span> Tambah Film
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <div class="brand">🎬 CineMax</div>
+        <div class="sub">Admin Dashboard</div>
       </div>
 
-      <div class="nav-label">Data</div>
+      <nav class="sidebar-nav">
+        <div class="nav-label">Menu Utama</div>
 
-      <div class="nav-item" id="nav-tickets" onclick="showPanel('tickets', this)">
-        <span class="ico">🎟</span> Tiket Terjual
-      </div>
-      <div class="nav-item" id="nav-users" onclick="showPanel('users', this)">
-        <span class="ico">👥</span> Pengguna
-      </div>
-      <div class="nav-item" id="nav-reviews" onclick="showPanel('reviews', this)">
-        <span class="ico">⭐</span> Ulasan
-      </div>
-
-      <div class="nav-label">Lainnya</div>
-
-      <a href="index.html" class="nav-item">
-        <span class="ico">🌐</span> Lihat Website
-      </a>
-    </nav>
-
-    <div class="sidebar-foot">
-      <div class="user-chip">
-        <div class="avatar">A</div>
-        <div class="info">
-          <div class="name">Admin</div>
-          <div class="mail">admin@cinemax.com</div>
+        <div class="nav-item active" id="nav-dashboard" onclick="showPanel('dashboard', this)">
+          <span class="ico">📊</span> Dashboard
         </div>
-      </div>
-      <button class="btn btn-danger btn-sm" style="width:100%;justify-content:center" onclick="Auth.logout()">
-        🚪 Keluar
-      </button>
-    </div>
-  </aside>
-
-  <!-- ===== MAIN ===== -->
-  <main class="admin-main">
-
-    <!-- Topbar -->
-    <div class="topbar">
-      <div style="display:flex;align-items:center;gap:14px">
-        <button class="sidebar-toggle" onclick="toggleSidebar()">☰ Menu</button>
-        <div>
-          <div class="topbar-title" id="panelTitle">Dashboard</div>
-          <div class="topbar-sub" id="panelSub">Selamat datang di panel admin CineMax</div>
+        <div class="nav-item" id="nav-movies" onclick="showPanel('movies', this)">
+          <span class="ico">🎬</span> Kelola Film
         </div>
-      </div>
-      <button class="btn btn-primary btn-sm" onclick="goAddMovie()">➕ Tambah Film</button>
-    </div>
+        <div class="nav-item" id="nav-add-movie" onclick="showPanel('add-movie', this)">
+          <span class="ico">➕</span> Tambah Film
+        </div>
 
-    <!-- Content -->
-    <div class="content">
+        <div class="nav-label">Data</div>
 
-      <!-- ======= DASHBOARD PANEL ======= -->
-      <div class="panel active" id="panel-dashboard">
-        <div class="stats-grid" id="statsGrid"></div>
-        <div class="dash-row">
-          <div class="dash-box">
-            <div class="dash-box-title">🎬 Film Terbaru Ditambahkan</div>
-            <div id="recentMovies"></div>
-          </div>
-          <div class="dash-box">
-            <div class="dash-box-title">🎟 Tiket Terbaru Terjual</div>
-            <div id="recentTickets"></div>
+        <div class="nav-item" id="nav-tickets" onclick="showPanel('tickets', this)">
+          <span class="ico">🎟</span> Tiket Terjual
+        </div>
+        <div class="nav-item" id="nav-users" onclick="showPanel('users', this)">
+          <span class="ico">👥</span> Pengguna
+        </div>
+        <div class="nav-item" id="nav-reviews" onclick="showPanel('reviews', this)">
+          <span class="ico">⭐</span> Ulasan
+        </div>
+
+        <div class="nav-label">Lainnya</div>
+
+        <a href="index.html" class="nav-item">
+          <span class="ico">🌐</span> Lihat Website
+        </a>
+      </nav>
+
+      <div class="sidebar-foot">
+        <div class="user-chip">
+          <div class="avatar">A</div>
+          <div class="info">
+            <div class="name">Admin</div>
+            <div class="mail">admin@cinemax.com</div>
           </div>
         </div>
+        <button class="btn btn-danger btn-sm" style="width:100%;justify-content:center" onclick="Auth.logout()">
+          🚪 Keluar
+        </button>
+      </div>
+    </aside>
+
+    <!-- ===== MAIN ===== -->
+    <main class="admin-main">
+
+      <!-- Topbar -->
+      <div class="topbar">
+        <div style="display:flex;align-items:center;gap:14px">
+          <button class="sidebar-toggle" onclick="toggleSidebar()">☰ Menu</button>
+          <div>
+            <div class="topbar-title" id="panelTitle">Dashboard</div>
+            <div class="topbar-sub" id="panelSub">Selamat datang di panel admin CineMax</div>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="goAddMovie()">➕ Tambah Film</button>
       </div>
 
-      <!-- ======= MOVIES PANEL ======= -->
-      <div class="panel" id="panel-movies">
-        <div class="panel-toolbar">
-          <input type="text" class="form-control" id="movieSearch"
-            placeholder="🔍 Cari film..." style="max-width:280px;border-radius:50px"
-            oninput="renderMoviesTable()" />
-          <button class="btn btn-primary btn-sm" onclick="goAddMovie()">➕ Tambah Film</button>
+      <!-- Content -->
+      <div class="content">
+
+        <!-- ======= DASHBOARD PANEL ======= -->
+        <div class="panel active" id="panel-dashboard">
+          <div class="stats-grid" id="statsGrid"></div>
+          <div class="dash-row">
+            <div class="dash-box">
+              <div class="dash-box-title">🎬 Film Terbaru Ditambahkan</div>
+              <div id="recentMovies"></div>
+            </div>
+            <div class="dash-box">
+              <div class="dash-box-title">🎟 Tiket Terbaru Terjual</div>
+              <div id="recentTickets"></div>
+            </div>
+          </div>
         </div>
-        <div class="tbl-wrap">
-          <table class="admin-tbl">
-            <thead>
-              <tr>
-                <th>Film</th>
-                <th>Genre</th>
-                <th>Tahun</th>
-                <th>Harga</th>
-                <th>Status</th>
-                <th>Aksi</th>
-              </tr>
-            </thead>
-            <tbody id="moviesTableBody"></tbody>
-          </table>
+
+        <!-- ======= MOVIES PANEL ======= -->
+        <div class="panel" id="panel-movies">
+          <div class="panel-toolbar">
+            <input type="text" class="form-control" id="movieSearch" placeholder="🔍 Cari film..."
+              style="max-width:280px;border-radius:50px" oninput="renderMoviesTable()" />
+            <button class="btn btn-primary btn-sm" onclick="goAddMovie()">➕ Tambah Film</button>
+          </div>
+          <div class="tbl-wrap">
+            <table class="admin-tbl">
+              <thead>
+                <tr>
+                  <th>Film</th>
+                  <th>Genre</th>
+                  <th>Tahun</th>
+                  <th>Harga</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="moviesTableBody"></tbody>
+            </table>
+          </div>
         </div>
-      </div>
 
-      <!-- ======= ADD / EDIT MOVIE PANEL ======= -->
-      <div class="panel" id="panel-add-movie">
-        <div class="form-card">
-          <input type="hidden" id="editMovieId" />
-          <div class="form-card-title" id="formTitle">➕ Tambah Film Baru</div>
+        <!-- ======= ADD / EDIT MOVIE PANEL ======= -->
+        <div class="panel" id="panel-add-movie">
+          <div class="form-card">
+            <input type="hidden" id="editMovieId" />
+            <div class="form-card-title" id="formTitle">➕ Tambah Film Baru</div>
 
-          <div class="form-grid-2" style="margin-bottom:16px">
-            <div class="form-group">
-              <label class="form-label">Judul Film *</label>
-              <input type="text" class="form-control" id="mTitle" placeholder="Masukkan judul film" />
-            </div>
-            <div class="form-group">
-              <label class="form-label">Sutradara *</label>
-              <input type="text" class="form-control" id="mDirector" placeholder="Nama sutradara" />
-            </div>
-          </div>
-
-          <div class="form-grid-3" style="margin-bottom:16px">
-            <div class="form-group">
-              <label class="form-label">Tahun Rilis *</label>
-              <input type="number" class="form-control" id="mYear" placeholder="2024" min="1900" max="2030" />
-            </div>
-            <div class="form-group">
-              <label class="form-label">Durasi (menit) *</label>
-              <input type="number" class="form-control" id="mDuration" placeholder="120" min="1" />
-            </div>
-            <div class="form-group">
-              <label class="form-label">Rating Awal (1–10)</label>
-              <input type="number" class="form-control" id="mRating" placeholder="7.5" min="1" max="10" step="0.1" />
-            </div>
-          </div>
-
-          <div class="form-group" style="margin-bottom:16px">
-            <label class="form-label">Harga Tiket (Rp) *</label>
-            <input type="number" class="form-control" id="mPrice" placeholder="55000" min="0" style="max-width:280px" />
-          </div>
-
-          <div class="form-group" style="margin-bottom:16px">
-            <label class="form-label">Sinopsis *</label>
-            <textarea class="form-control" id="mDesc" rows="3" placeholder="Deskripsi singkat film..."></textarea>
-          </div>
-
-          <div class="form-grid-2" style="margin-bottom:16px">
-            <div class="form-group">
-              <label class="form-label">Poster Film</label>
-              <div style="display:flex;gap:8px;margin-bottom:8px">
-                <button type="button" class="btn btn-ghost btn-sm poster-tab active" onclick="switchPosterTab('url', this)" style="flex:1;justify-content:center">🔗 URL</button>
-                <button type="button" class="btn btn-ghost btn-sm poster-tab" onclick="switchPosterTab('file', this)" style="flex:1;justify-content:center">📁 Upload</button>
+            <div class="form-grid-2" style="margin-bottom:16px">
+              <div class="form-group">
+                <label class="form-label">Judul Film *</label>
+                <input type="text" class="form-control" id="mTitle" placeholder="Masukkan judul film" />
               </div>
-              <div id="posterUrlWrap">
-                <input type="url" class="form-control" id="mPoster" placeholder="https://..." oninput="previewPoster()" />
+              <div class="form-group">
+                <label class="form-label">Sutradara *</label>
+                <input type="text" class="form-control" id="mDirector" placeholder="Nama sutradara" />
               </div>
-              <div id="posterFileWrap" style="display:none">
-                <label style="display:flex;align-items:center;justify-content:center;gap:10px;padding:20px;background:rgba(255,255,255,0.03);border:2px dashed var(--border);border-radius:var(--radius);cursor:pointer;transition:all 0.2s;color:var(--text-muted);font-size:0.85rem" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">
-                  <span style="font-size:1.4rem">🖼️</span>
-                  <span id="posterFileName">Pilih gambar poster...</span>
-                  <input type="file" accept="image/*" id="mPosterFile" style="display:none" onchange="handlePosterUpload(this)" />
-                </label>
-              </div>
-              <img id="posterPreview" class="poster-preview" alt="Preview" />
             </div>
-            <div class="form-group">
-              <label class="form-label">Backdrop Film</label>
-              <div style="display:flex;gap:8px;margin-bottom:8px">
-                <button type="button" class="btn btn-ghost btn-sm backdrop-tab active" onclick="switchBackdropTab('url', this)" style="flex:1;justify-content:center">🔗 URL</button>
-                <button type="button" class="btn btn-ghost btn-sm backdrop-tab" onclick="switchBackdropTab('file', this)" style="flex:1;justify-content:center">📁 Upload</button>
+
+            <div class="form-grid-3" style="margin-bottom:16px">
+              <div class="form-group">
+                <label class="form-label">Tahun Rilis *</label>
+                <input type="number" class="form-control" id="mYear" placeholder="2024" min="1900" max="2030" />
               </div>
-              <div id="backdropUrlWrap">
-                <input type="url" class="form-control" id="mBackdrop" placeholder="https://..." />
+              <div class="form-group">
+                <label class="form-label">Durasi (menit) *</label>
+                <input type="number" class="form-control" id="mDuration" placeholder="120" min="1" />
               </div>
-              <div id="backdropFileWrap" style="display:none">
-                <label style="display:flex;align-items:center;justify-content:center;gap:10px;padding:20px;background:rgba(255,255,255,0.03);border:2px dashed var(--border);border-radius:var(--radius);cursor:pointer;transition:all 0.2s;color:var(--text-muted);font-size:0.85rem" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">
-                  <span style="font-size:1.4rem">🖼️</span>
-                  <span id="backdropFileName">Pilih gambar backdrop...</span>
-                  <input type="file" accept="image/*" id="mBackdropFile" style="display:none" onchange="handleBackdropUpload(this)" />
-                </label>
+              <div class="form-group">
+                <label class="form-label">Rating Awal (1–10)</label>
+                <input type="number" class="form-control" id="mRating" placeholder="7.5" min="1" max="10" step="0.1" />
               </div>
-              <label class="form-label" style="margin-top:16px">URL Trailer (YouTube embed)</label>
-              <input type="url" class="form-control" id="mTrailer" placeholder="https://www.youtube.com/embed/..." />
+            </div>
+
+            <div class="form-group" style="margin-bottom:16px">
+              <label class="form-label">Harga Tiket (Rp) *</label>
+              <input type="number" class="form-control" id="mPrice" placeholder="55000" min="0"
+                style="max-width:280px" />
+            </div>
+
+            <div class="form-group" style="margin-bottom:16px">
+              <label class="form-label">Sinopsis *</label>
+              <textarea class="form-control" id="mDesc" rows="3" placeholder="Deskripsi singkat film..."></textarea>
+            </div>
+
+            <div class="form-grid-2" style="margin-bottom:16px">
+              <div class="form-group">
+                <label class="form-label">Poster Film</label>
+                <div style="display:flex;gap:8px;margin-bottom:8px">
+                  <button type="button" class="btn btn-ghost btn-sm poster-tab active"
+                    onclick="switchPosterTab('url', this)" style="flex:1;justify-content:center">🔗 URL</button>
+                  <button type="button" class="btn btn-ghost btn-sm poster-tab" onclick="switchPosterTab('file', this)"
+                    style="flex:1;justify-content:center">📁 Upload</button>
+                </div>
+                <div id="posterUrlWrap">
+                  <input type="url" class="form-control" id="mPoster" placeholder="https://..."
+                    oninput="previewPoster()" />
+                </div>
+                <div id="posterFileWrap" style="display:none">
+                  <label
+                    style="display:flex;align-items:center;justify-content:center;gap:10px;padding:20px;background:rgba(255,255,255,0.03);border:2px dashed var(--border);border-radius:var(--radius);cursor:pointer;transition:all 0.2s;color:var(--text-muted);font-size:0.85rem"
+                    onmouseover="this.style.borderColor='var(--primary)'"
+                    onmouseout="this.style.borderColor='var(--border)'">
+                    <span style="font-size:1.4rem">🖼️</span>
+                    <span id="posterFileName">Pilih gambar poster...</span>
+                    <input type="file" accept="image/*" id="mPosterFile" style="display:none"
+                      onchange="handlePosterUpload(this)" />
+                  </label>
+                </div>
+                <img id="posterPreview" class="poster-preview" alt="Preview" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Backdrop Film</label>
+                <div style="display:flex;gap:8px;margin-bottom:8px">
+                  <button type="button" class="btn btn-ghost btn-sm backdrop-tab active"
+                    onclick="switchBackdropTab('url', this)" style="flex:1;justify-content:center">🔗 URL</button>
+                  <button type="button" class="btn btn-ghost btn-sm backdrop-tab"
+                    onclick="switchBackdropTab('file', this)" style="flex:1;justify-content:center">📁 Upload</button>
+                </div>
+                <div id="backdropUrlWrap">
+                  <input type="url" class="form-control" id="mBackdrop" placeholder="https://..." />
+                </div>
+                <div id="backdropFileWrap" style="display:none">
+                  <label
+                    style="display:flex;align-items:center;justify-content:center;gap:10px;padding:20px;background:rgba(255,255,255,0.03);border:2px dashed var(--border);border-radius:var(--radius);cursor:pointer;transition:all 0.2s;color:var(--text-muted);font-size:0.85rem"
+                    onmouseover="this.style.borderColor='var(--primary)'"
+                    onmouseout="this.style.borderColor='var(--border)'">
+                    <span style="font-size:1.4rem">🖼️</span>
+                    <span id="backdropFileName">Pilih gambar backdrop...</span>
+                    <input type="file" accept="image/*" id="mBackdropFile" style="display:none"
+                      onchange="handleBackdropUpload(this)" />
+                  </label>
+                </div>
+                <label class="form-label" style="margin-top:16px">URL Trailer (YouTube embed)</label>
+                <input type="url" class="form-control" id="mTrailer" placeholder="https://www.youtube.com/embed/..." />
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom:16px">
+              <label class="form-label">Genre (tekan Enter untuk tambah)</label>
+              <input type="text" class="form-control" id="mGenreInput" placeholder="Contoh: Action"
+                onkeydown="addGenre(event)" style="max-width:320px" />
+              <div class="genre-wrap" id="genreTags"></div>
+            </div>
+
+            <div class="form-group" style="margin-bottom:16px">
+              <label class="form-label">Pemain (pisahkan dengan koma)</label>
+              <input type="text" class="form-control" id="mCast" placeholder="Nama Aktor 1, Nama Aktor 2, ..." />
+            </div>
+
+            <div class="form-group" style="margin-bottom:16px">
+              <label class="form-label">Jadwal Tayang (tekan Enter untuk tambah)</label>
+              <input type="text" class="form-control" id="mShowtimeInput" placeholder="Contoh: 10:00"
+                onkeydown="addShowtime(event)" style="max-width:320px" />
+              <div class="showtime-wrap" id="showtimeTags"></div>
+            </div>
+
+            <div class="form-grid-2" style="margin-bottom:20px">
+              <label
+                style="display:flex;align-items:center;gap:10px;padding:14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer">
+                <input type="checkbox" id="mNowPlaying" style="width:18px;height:18px" />
+                <span style="font-size:0.88rem">Tayang Sekarang</span>
+              </label>
+              <label
+                style="display:flex;align-items:center;gap:10px;padding:14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer">
+                <input type="checkbox" id="mFeatured" style="width:18px;height:18px" />
+                <span style="font-size:0.88rem">Film Unggulan (Featured)</span>
+              </label>
+            </div>
+
+            <div style="display:flex;gap:12px">
+              <button class="btn btn-primary" onclick="saveMovie()">💾 Simpan Film</button>
+              <button class="btn btn-secondary" onclick="resetMovieForm()">🔄 Reset</button>
+              <button class="btn btn-ghost" onclick="showPanel('movies', document.getElementById('nav-movies'))">←
+                Batal</button>
             </div>
           </div>
+        </div>
 
-          <div class="form-group" style="margin-bottom:16px">
-            <label class="form-label">Genre (tekan Enter untuk tambah)</label>
-            <input type="text" class="form-control" id="mGenreInput"
-              placeholder="Contoh: Action" onkeydown="addGenre(event)" style="max-width:320px" />
-            <div class="genre-wrap" id="genreTags"></div>
-          </div>
-
-          <div class="form-group" style="margin-bottom:16px">
-            <label class="form-label">Pemain (pisahkan dengan koma)</label>
-            <input type="text" class="form-control" id="mCast" placeholder="Nama Aktor 1, Nama Aktor 2, ..." />
-          </div>
-
-          <div class="form-group" style="margin-bottom:16px">
-            <label class="form-label">Jadwal Tayang (tekan Enter untuk tambah)</label>
-            <input type="text" class="form-control" id="mShowtimeInput"
-              placeholder="Contoh: 10:00" onkeydown="addShowtime(event)" style="max-width:320px" />
-            <div class="showtime-wrap" id="showtimeTags"></div>
-          </div>
-
-          <div class="form-grid-2" style="margin-bottom:20px">
-            <label style="display:flex;align-items:center;gap:10px;padding:14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer">
-              <input type="checkbox" id="mNowPlaying" style="width:18px;height:18px" />
-              <span style="font-size:0.88rem">Tayang Sekarang</span>
-            </label>
-            <label style="display:flex;align-items:center;gap:10px;padding:14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer">
-              <input type="checkbox" id="mFeatured" style="width:18px;height:18px" />
-              <span style="font-size:0.88rem">Film Unggulan (Featured)</span>
-            </label>
-          </div>
-
-          <div style="display:flex;gap:12px">
-            <button class="btn btn-primary" onclick="saveMovie()">💾 Simpan Film</button>
-            <button class="btn btn-secondary" onclick="resetMovieForm()">🔄 Reset</button>
-            <button class="btn btn-ghost" onclick="showPanel('movies', document.getElementById('nav-movies'))">← Batal</button>
+        <!-- ======= TICKETS PANEL ======= -->
+        <div class="panel" id="panel-tickets">
+          <div class="tbl-wrap">
+            <table class="admin-tbl">
+              <thead>
+                <tr>
+                  <th>ID Tiket</th>
+                  <th>Film</th>
+                  <th>Pengguna</th>
+                  <th>Tanggal</th>
+                  <th>Jam</th>
+                  <th>Kursi</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody id="ticketsTableBody"></tbody>
+            </table>
           </div>
         </div>
-      </div>
 
-      <!-- ======= TICKETS PANEL ======= -->
-      <div class="panel" id="panel-tickets">
-        <div class="tbl-wrap">
-          <table class="admin-tbl">
-            <thead>
-              <tr>
-                <th>ID Tiket</th><th>Film</th><th>Pengguna</th>
-                <th>Tanggal</th><th>Jam</th><th>Kursi</th><th>Total</th>
-              </tr>
-            </thead>
-            <tbody id="ticketsTableBody"></tbody>
-          </table>
+        <!-- ======= USERS PANEL ======= -->
+        <div class="panel" id="panel-users">
+          <div class="tbl-wrap">
+            <table class="admin-tbl">
+              <thead>
+                <tr>
+                  <th>Nama</th>
+                  <th>Email</th>
+                  <th>Tiket Dibeli</th>
+                  <th>Ulasan</th>
+                  <th>Daftar Sejak</th>
+                </tr>
+              </thead>
+              <tbody id="usersTableBody"></tbody>
+            </table>
+          </div>
         </div>
-      </div>
 
-      <!-- ======= USERS PANEL ======= -->
-      <div class="panel" id="panel-users">
-        <div class="tbl-wrap">
-          <table class="admin-tbl">
-            <thead>
-              <tr>
-                <th>Nama</th><th>Email</th><th>Tiket Dibeli</th><th>Ulasan</th><th>Daftar Sejak</th>
-              </tr>
-            </thead>
-            <tbody id="usersTableBody"></tbody>
-          </table>
+        <!-- ======= REVIEWS PANEL ======= -->
+        <div class="panel" id="panel-reviews">
+          <div class="tbl-wrap">
+            <table class="admin-tbl">
+              <thead>
+                <tr>
+                  <th>Pengguna</th>
+                  <th>Film</th>
+                  <th>Rating</th>
+                  <th>Ulasan</th>
+                  <th>Tanggal</th>
+                </tr>
+              </thead>
+              <tbody id="reviewsTableBody"></tbody>
+            </table>
+          </div>
         </div>
-      </div>
 
-      <!-- ======= REVIEWS PANEL ======= -->
-      <div class="panel" id="panel-reviews">
-        <div class="tbl-wrap">
-          <table class="admin-tbl">
-            <thead>
-              <tr>
-                <th>Pengguna</th><th>Film</th><th>Rating</th><th>Ulasan</th><th>Tanggal</th>
-              </tr>
-            </thead>
-            <tbody id="reviewsTableBody"></tbody>
-          </table>
-        </div>
-      </div>
+      </div><!-- /content -->
+    </main>
+  </div><!-- /admin-wrap -->
 
-    </div><!-- /content -->
-  </main>
-</div><!-- /admin-wrap -->
+  <script src="js/app.js"></script>
+  <script>
+    /* ===== SIDEBAR TOGGLE (mobile) ===== */
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('sidebarOverlay').classList.toggle('open');
+    }
 
-<script src="js/app.js"></script>
-<script>
-  /* ===== SIDEBAR TOGGLE (mobile) ===== */
-  function toggleSidebar() {
-    document.getElementById('sidebar').classList.toggle('open');
-    document.getElementById('sidebarOverlay').classList.toggle('open');
-  }
+    /* ===== PANEL SWITCHING ===== */
+    const panelMeta = {
+      dashboard: { title: 'Dashboard', sub: 'Ringkasan data CineMax' },
+      movies: { title: 'Kelola Film', sub: 'Lihat, edit, dan hapus film' },
+      'add-movie': { title: 'Tambah Film', sub: 'Isi data film baru' },
+      tickets: { title: 'Tiket Terjual', sub: 'Riwayat pembelian tiket' },
+      users: { title: 'Pengguna', sub: 'Daftar pengguna terdaftar' },
+      reviews: { title: 'Ulasan', sub: 'Review dari pengguna' },
+    };
 
-  /* ===== PANEL SWITCHING ===== */
-  const panelMeta = {
-    dashboard:   { title: 'Dashboard',    sub: 'Ringkasan data CineMax' },
-    movies:      { title: 'Kelola Film',  sub: 'Lihat, edit, dan hapus film' },
-    'add-movie': { title: 'Tambah Film',  sub: 'Isi data film baru' },
-    tickets:     { title: 'Tiket Terjual', sub: 'Riwayat pembelian tiket' },
-    users:       { title: 'Pengguna',     sub: 'Daftar pengguna terdaftar' },
-    reviews:     { title: 'Ulasan',       sub: 'Review dari pengguna' },
-  };
+    function showPanel(name, navEl) {
+      // Hide all panels
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+      // Show target
+      document.getElementById('panel-' + name).classList.add('active');
+      if (navEl) navEl.classList.add('active');
+      const meta = panelMeta[name] || {};
+      document.getElementById('panelTitle').textContent = meta.title || name;
+      document.getElementById('panelSub').textContent = meta.sub || '';
+      // Close sidebar on mobile
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebarOverlay').classList.remove('open');
+    }
 
-  function showPanel(name, navEl) {
-    // Hide all panels
-    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-    // Show target
-    document.getElementById('panel-' + name).classList.add('active');
-    if (navEl) navEl.classList.add('active');
-    const meta = panelMeta[name] || {};
-    document.getElementById('panelTitle').textContent = meta.title || name;
-    document.getElementById('panelSub').textContent = meta.sub || '';
-    // Close sidebar on mobile
-    document.getElementById('sidebar').classList.remove('open');
-    document.getElementById('sidebarOverlay').classList.remove('open');
-  }
+    function goAddMovie() {
+      resetMovieForm();
+      showPanel('add-movie', document.getElementById('nav-add-movie'));
+    }
 
-  function goAddMovie() {
-    resetMovieForm();
-    showPanel('add-movie', document.getElementById('nav-add-movie'));
-  }
+    /* ===== INIT ===== */
+    document.addEventListener('DOMContentLoaded', async () => {
+      const user = Auth.requireAdmin();
+      if (!user) return;
 
-  /* ===== INIT ===== */
-  document.addEventListener('DOMContentLoaded', async () => {
-    const user = Auth.requireAdmin();
-    if (!user) return;
-    
-    await Movies.init();
+      await Movies.init();
 
-    await loadDashboard();
-    renderMoviesTable();
-    await renderTicketsTable();
-    await renderUsersTable();
-    await renderReviewsTable();
-  });
+      await loadDashboard();
+      renderMoviesTable();
+      await renderTicketsTable();
+      await renderUsersTable();
+      await renderReviewsTable();
+    });
 
-  /* ===== DASHBOARD ===== */
-  async function loadDashboard() {
-    const movies  = Movies.getAll();
-    const statsData = await Admin.getStats();
-    const tickets = await Tickets.getAll();
+    /* ===== DASHBOARD ===== */
+    async function loadDashboard() {
+      const movies = Movies.getAll();
+      const statsData = await Admin.getStats();
+      const tickets = await Tickets.getAll();
 
-    const stats = [
-      { ico: '🎬', num: statsData ? statsData.movieCount : 0,  label: 'Total Film' },
-      { ico: '🎟', num: statsData ? statsData.ticketCount : 0, label: 'Tiket Terjual' },
-      { ico: '👥', num: statsData ? statsData.userCount : 0,   label: 'Pengguna' },
-      { ico: '💰', num: 'Rp ' + ((statsData ? statsData.revenue : 0) / 1_000_000).toFixed(1) + ' JT', label: 'Total Pendapatan' },
-    ];
+      const stats = [
+        { ico: '🎬', num: statsData ? statsData.movieCount : 0, label: 'Total Film' },
+        { ico: '🎟', num: statsData ? statsData.ticketCount : 0, label: 'Tiket Terjual' },
+        { ico: '👥', num: statsData ? statsData.userCount : 0, label: 'Pengguna' },
+        { ico: '💰', num: 'Rp ' + ((statsData ? statsData.revenue : 0) / 1_000_000).toFixed(1) + ' JT', label: 'Total Pendapatan' },
+      ];
 
-    const grid = document.getElementById('statsGrid');
-    grid.innerHTML = stats.map(s => `
+      const grid = document.getElementById('statsGrid');
+      grid.innerHTML = stats.map(s => `
       <div class="stat-card">
         <div class="stat-icon">${s.ico}</div>
         <div class="stat-num">${s.num}</div>
@@ -735,12 +940,12 @@
       </div>
     `).join('');
 
-    // Recent movies
-    const rm = document.getElementById('recentMovies');
-    if (!movies.length) {
-      rm.innerHTML = '<div style="color:var(--text-muted);font-size:0.85rem;padding:12px 0">Belum ada film.</div>';
-    } else {
-      rm.innerHTML = movies.slice(0, 5).map(m => `
+      // Recent movies
+      const rm = document.getElementById('recentMovies');
+      if (!movies.length) {
+        rm.innerHTML = '<div style="color:var(--text-muted);font-size:0.85rem;padding:12px 0">Belum ada film.</div>';
+      } else {
+        rm.innerHTML = movies.slice(0, 5).map(m => `
         <div class="dash-item">
           <img src="${m.poster}" alt="${m.title}" onerror="this.style.opacity=0" />
           <div style="flex:1;min-width:0">
@@ -750,14 +955,14 @@
           <span class="pill ${m.nowPlaying ? 'pill-now' : 'pill-arch'}">${m.nowPlaying ? 'Tayang' : 'Arsip'}</span>
         </div>
       `).join('');
-    }
+      }
 
-    // Recent tickets
-    const rt = document.getElementById('recentTickets');
-    if (!tickets.length) {
-      rt.innerHTML = '<div style="color:var(--text-muted);font-size:0.85rem;padding:12px 0">Belum ada tiket terjual.</div>';
-    } else {
-      rt.innerHTML = tickets.slice(-5).reverse().map(t => `
+      // Recent tickets
+      const rt = document.getElementById('recentTickets');
+      if (!tickets.length) {
+        rt.innerHTML = '<div style="color:var(--text-muted);font-size:0.85rem;padding:12px 0">Belum ada tiket terjual.</div>';
+      } else {
+        rt.innerHTML = tickets.slice(-5).reverse().map(t => `
         <div class="dash-item" style="flex-direction:column;align-items:flex-start;gap:4px">
           <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
             <span style="font-weight:700;font-size:0.85rem">${t.movieTitle}</span>
@@ -766,21 +971,21 @@
           <div style="font-size:0.73rem;color:var(--text-muted)">${t.id} · ${t.showtime} · ${t.seats} kursi</div>
         </div>
       `).join('');
-    }
-  }
-
-  /* ===== MOVIES TABLE ===== */
-  function renderMoviesTable() {
-    const q = (document.getElementById('movieSearch')?.value || '').toLowerCase();
-    const movies = Movies.getAll().filter(m => !q || m.title.toLowerCase().includes(q));
-    const tbody = document.getElementById('moviesTableBody');
-
-    if (!movies.length) {
-      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-muted)">Tidak ada film ditemukan.</td></tr>`;
-      return;
+      }
     }
 
-    tbody.innerHTML = movies.map(m => `
+    /* ===== MOVIES TABLE ===== */
+    function renderMoviesTable() {
+      const q = (document.getElementById('movieSearch')?.value || '').toLowerCase();
+      const movies = Movies.getAll().filter(m => !q || m.title.toLowerCase().includes(q));
+      const tbody = document.getElementById('moviesTableBody');
+
+      if (!movies.length) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-muted)">Tidak ada film ditemukan.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = movies.map(m => `
       <tr>
         <td>
           <div class="tbl-movie-cell">
@@ -803,20 +1008,20 @@
         </td>
       </tr>
     `).join('');
-  }
-
-  /* ===== TICKETS TABLE ===== */
-  async function renderTicketsTable() {
-    const tickets = await Tickets.getAll();
-    const tbody = document.getElementById('ticketsTableBody');
-
-    if (!tickets.length) {
-      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-muted)">Belum ada tiket terjual.</td></tr>`;
-      return;
     }
 
-    tbody.innerHTML = tickets.slice().reverse().map(t => {
-      return `
+    /* ===== TICKETS TABLE ===== */
+    async function renderTicketsTable() {
+      const tickets = await Tickets.getAll();
+      const tbody = document.getElementById('ticketsTableBody');
+
+      if (!tickets.length) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-muted)">Belum ada tiket terjual.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = tickets.slice().reverse().map(t => {
+        return `
         <tr>
           <td style="font-family:monospace;font-size:0.75rem;color:var(--primary)">${t.id}</td>
           <td style="font-weight:600">${t.movieTitle}</td>
@@ -827,24 +1032,24 @@
           <td style="font-weight:700;color:var(--primary)">${UI.formatPrice(t.totalPrice)}</td>
         </tr>
       `;
-    }).join('');
-  }
-
-  /* ===== USERS TABLE ===== */
-  async function renderUsersTable() {
-    const users = await Admin.getUsers();
-    const tbody = document.getElementById('usersTableBody');
-
-    if (!users.length) {
-      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-muted)">Belum ada pengguna terdaftar.</td></tr>`;
-      return;
+      }).join('');
     }
 
-    tbody.innerHTML = users.map(u => {
-      const ticketCount = u.ticket_count || 0;
-      const reviewCount = u.review_count || 0;
-      const joined = new Date(u.created_at).toLocaleDateString('id-ID');
-      return `
+    /* ===== USERS TABLE ===== */
+    async function renderUsersTable() {
+      const users = await Admin.getUsers();
+      const tbody = document.getElementById('usersTableBody');
+
+      if (!users.length) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-muted)">Belum ada pengguna terdaftar.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = users.map(u => {
+        const ticketCount = u.ticket_count || 0;
+        const reviewCount = u.review_count || 0;
+        const joined = new Date(u.created_at).toLocaleDateString('id-ID');
+        return `
         <tr>
           <td>
             <div style="display:flex;align-items:center;gap:10px">
@@ -858,24 +1063,24 @@
           <td style="color:var(--text-muted);font-size:0.83rem">${joined}</td>
         </tr>
       `;
-    }).join('');
-  }
-
-  /* ===== REVIEWS TABLE ===== */
-  async function renderReviewsTable() {
-    const reviews = await Ratings.getAll();
-    const tbody = document.getElementById('reviewsTableBody');
-
-    if (!reviews.length) {
-      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-muted)">Belum ada ulasan.</td></tr>`;
-      return;
+      }).join('');
     }
 
-    tbody.innerHTML = reviews.slice().reverse().map(r => {
-      const movie = Movies.getById(r.movieId);
-      const date = new Date(r.date).toLocaleDateString('id-ID');
-      const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
-      return `
+    /* ===== REVIEWS TABLE ===== */
+    async function renderReviewsTable() {
+      const reviews = await Ratings.getAll();
+      const tbody = document.getElementById('reviewsTableBody');
+
+      if (!reviews.length) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-muted)">Belum ada ulasan.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = reviews.slice().reverse().map(r => {
+        const movie = Movies.getById(r.movieId);
+        const date = new Date(r.date).toLocaleDateString('id-ID');
+        const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+        return `
         <tr>
           <td style="font-weight:600">${r.userName}</td>
           <td>${movie?.title || '<span style="color:var(--text-muted)">Film Dihapus</span>'}</td>
@@ -884,231 +1089,234 @@
           <td style="color:var(--text-muted);font-size:0.83rem">${date}</td>
         </tr>
       `;
-    }).join('');
-  }
-
-  /* ===== MOVIE FORM ===== */
-  let genreList = [];
-  let showtimeList = [];
-
-  function addGenre(e) {
-    if (e.key !== 'Enter') return;
-    e.preventDefault();
-    const inp = document.getElementById('mGenreInput');
-    const val = inp.value.trim();
-    if (!val || genreList.includes(val)) { inp.value = ''; return; }
-    genreList.push(val);
-    inp.value = '';
-    renderGenreTags();
-  }
-
-  function removeGenre(g) {
-    genreList = genreList.filter(x => x !== g);
-    renderGenreTags();
-  }
-
-  function renderGenreTags() {
-    document.getElementById('genreTags').innerHTML = genreList.map(g =>
-      `<span class="genre-chip">${g}<button onclick="removeGenre('${g}')">×</button></span>`
-    ).join('');
-  }
-
-  function addShowtime(e) {
-    if (e.key !== 'Enter') return;
-    e.preventDefault();
-    const inp = document.getElementById('mShowtimeInput');
-    const val = inp.value.trim();
-    if (!val || showtimeList.includes(val)) { inp.value = ''; return; }
-    showtimeList.push(val);
-    inp.value = '';
-    renderShowtimeTags();
-  }
-
-  function removeShowtime(t) {
-    showtimeList = showtimeList.filter(x => x !== t);
-    renderShowtimeTags();
-  }
-
-  function renderShowtimeTags() {
-    document.getElementById('showtimeTags').innerHTML = showtimeList.map(t =>
-      `<span class="showtime-chip">${t}<button onclick="removeShowtime('${t}')">×</button></span>`
-    ).join('');
-  }
-
-  function previewPoster() {
-    const url = document.getElementById('mPoster').value;
-    const img = document.getElementById('posterPreview');
-    img.src = url;
-    img.style.display = url ? 'block' : 'none';
-  }
-
-  /* ===== IMAGE UPLOAD HANDLERS ===== */
-  let uploadedPosterBase64 = '';
-  let uploadedBackdropBase64 = '';
-
-  function switchPosterTab(mode, btn) {
-    document.querySelectorAll('.poster-tab').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('posterUrlWrap').style.display = mode === 'url' ? 'block' : 'none';
-    document.getElementById('posterFileWrap').style.display = mode === 'file' ? 'block' : 'none';
-  }
-
-  function switchBackdropTab(mode, btn) {
-    document.querySelectorAll('.backdrop-tab').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('backdropUrlWrap').style.display = mode === 'url' ? 'block' : 'none';
-    document.getElementById('backdropFileWrap').style.display = mode === 'file' ? 'block' : 'none';
-  }
-
-  function handlePosterUpload(input) {
-    const file = input.files[0];
-    if (!file) return;
-    if (file.size > 1000 * 1024) {
-      UI.showToast('Ukuran file poster maks 1MB!', 'error');
-      input.value = '';
-      return;
+      }).join('');
     }
-    document.getElementById('posterFileName').textContent = file.name;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      uploadedPosterBase64 = e.target.result;
+
+    /* ===== MOVIE FORM ===== */
+    let genreList = [];
+    let showtimeList = [];
+
+    function addGenre(e) {
+      if (e.key !== 'Enter') return;
+      e.preventDefault();
+      const inp = document.getElementById('mGenreInput');
+      const val = inp.value.trim();
+      if (!val || genreList.includes(val)) { inp.value = ''; return; }
+      genreList.push(val);
+      inp.value = '';
+      renderGenreTags();
+    }
+
+    function removeGenre(g) {
+      genreList = genreList.filter(x => x !== g);
+      renderGenreTags();
+    }
+
+    function renderGenreTags() {
+      document.getElementById('genreTags').innerHTML = genreList.map(g =>
+        `<span class="genre-chip">${g}<button onclick="removeGenre('${g}')">×</button></span>`
+      ).join('');
+    }
+
+    function addShowtime(e) {
+      if (e.key !== 'Enter') return;
+      e.preventDefault();
+      const inp = document.getElementById('mShowtimeInput');
+      const val = inp.value.trim();
+      if (!val || showtimeList.includes(val)) { inp.value = ''; return; }
+      showtimeList.push(val);
+      inp.value = '';
+      renderShowtimeTags();
+    }
+
+    function removeShowtime(t) {
+      showtimeList = showtimeList.filter(x => x !== t);
+      renderShowtimeTags();
+    }
+
+    function renderShowtimeTags() {
+      document.getElementById('showtimeTags').innerHTML = showtimeList.map(t =>
+        `<span class="showtime-chip">${t}<button onclick="removeShowtime('${t}')">×</button></span>`
+      ).join('');
+    }
+
+    function previewPoster() {
+      const url = document.getElementById('mPoster').value;
       const img = document.getElementById('posterPreview');
-      img.src = uploadedPosterBase64;
-      img.style.display = 'block';
-    };
-    reader.readAsDataURL(file);
-  }
-
-  function handleBackdropUpload(input) {
-    const file = input.files[0];
-    if (!file) return;
-    if (file.size > 1000 * 1024) {
-      UI.showToast('Ukuran file backdrop maks 1MB!', 'error');
-      input.value = '';
-      return;
-    }
-    document.getElementById('backdropFileName').textContent = file.name;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      uploadedBackdropBase64 = e.target.result;
-    };
-    reader.readAsDataURL(file);
-  }
-
-  function resetMovieForm() {
-    document.getElementById('editMovieId').value = '';
-    document.getElementById('formTitle').textContent = '➕ Tambah Film Baru';
-    ['mTitle','mDirector','mYear','mDuration','mPrice','mRating','mDesc','mPoster','mBackdrop','mTrailer','mCast'].forEach(id => {
-      document.getElementById(id).value = '';
-    });
-    document.getElementById('mNowPlaying').checked = false;
-    document.getElementById('mFeatured').checked = false;
-    document.getElementById('posterPreview').style.display = 'none';
-    // Reset file uploads
-    uploadedPosterBase64 = '';
-    uploadedBackdropBase64 = '';
-    document.getElementById('mPosterFile').value = '';
-    document.getElementById('mBackdropFile').value = '';
-    document.getElementById('posterFileName').textContent = 'Pilih gambar poster...';
-    document.getElementById('backdropFileName').textContent = 'Pilih gambar backdrop...';
-    // Reset tabs to URL mode
-    document.querySelectorAll('.poster-tab').forEach((b,i) => b.classList.toggle('active', i === 0));
-    document.querySelectorAll('.backdrop-tab').forEach((b,i) => b.classList.toggle('active', i === 0));
-    document.getElementById('posterUrlWrap').style.display = 'block';
-    document.getElementById('posterFileWrap').style.display = 'none';
-    document.getElementById('backdropUrlWrap').style.display = 'block';
-    document.getElementById('backdropFileWrap').style.display = 'none';
-    genreList = []; showtimeList = [];
-    renderGenreTags(); renderShowtimeTags();
-  }
-
-  async function saveMovie() {
-    const title    = document.getElementById('mTitle').value.trim();
-    const director = document.getElementById('mDirector').value.trim();
-    const year     = parseInt(document.getElementById('mYear').value);
-    const duration = parseInt(document.getElementById('mDuration').value);
-    const price    = parseInt(document.getElementById('mPrice').value);
-    const desc     = document.getElementById('mDesc').value.trim();
-
-    if (!title || !director || !year || !duration || !price || !desc) {
-      UI.showToast('Lengkapi semua field wajib!', 'error'); return;
-    }
-    if (!genreList.length) {
-      UI.showToast('Tambahkan minimal 1 genre!', 'error'); return;
+      img.src = url;
+      img.style.display = url ? 'block' : 'none';
     }
 
-    const castRaw  = document.getElementById('mCast').value.trim();
-    const castArr  = castRaw ? castRaw.split(',').map(c => c.trim()).filter(Boolean) : [];
-    const posterUrl = document.getElementById('mPoster').value.trim();
-    const backdropUrl = document.getElementById('mBackdrop').value.trim();
+    /* ===== IMAGE UPLOAD HANDLERS ===== */
+    let uploadedPosterBase64 = '';
+    let uploadedBackdropBase64 = '';
 
-    // Priority: uploaded file (base64) > URL input > placeholder
-    const posterVal = uploadedPosterBase64 || posterUrl;
-    const backdropVal = uploadedBackdropBase64 || backdropUrl;
-
-    const movieData = {
-      title, director, year, duration, price,
-      description: desc,
-      rating: parseFloat(document.getElementById('mRating').value) || 7.0,
-      poster: posterVal || `https://placehold.co/200x300/151520/00F5D4?text=${encodeURIComponent(title)}`,
-      backdrop: backdropVal,
-      trailer:  document.getElementById('mTrailer').value.trim(),
-      genre: genreList,
-      cast: castArr,
-      showtimes: showtimeList.length ? showtimeList : ['10:00','13:00','16:00','19:00'],
-      nowPlaying: document.getElementById('mNowPlaying').checked,
-      featured:   document.getElementById('mFeatured').checked,
-    };
-
-    const editId = document.getElementById('editMovieId').value;
-    if (editId) {
-      await Movies.update(editId, movieData);
-      UI.showToast('Film berhasil diperbarui! ✅', 'success');
-    } else {
-      await Movies.add(movieData);
-      UI.showToast('Film berhasil ditambahkan! ✅', 'success');
+    function switchPosterTab(mode, btn) {
+      document.querySelectorAll('.poster-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('posterUrlWrap').style.display = mode === 'url' ? 'block' : 'none';
+      document.getElementById('posterFileWrap').style.display = mode === 'file' ? 'block' : 'none';
     }
 
-    resetMovieForm();
-    renderMoviesTable();
-    await loadDashboard();
-    showPanel('movies', document.getElementById('nav-movies'));
-  }
+    function switchBackdropTab(mode, btn) {
+      document.querySelectorAll('.backdrop-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('backdropUrlWrap').style.display = mode === 'url' ? 'block' : 'none';
+      document.getElementById('backdropFileWrap').style.display = mode === 'file' ? 'block' : 'none';
+    }
 
-  function editMovie(id) {
-    const m = Movies.getById(id);
-    if (!m) return;
+    function handlePosterUpload(input) {
+      const file = input.files[0];
+      if (!file) return;
+      if (file.size > 1000 * 1024) {
+        UI.showToast('Ukuran file poster maks 1MB!', 'error');
+        input.value = '';
+        return;
+      }
+      document.getElementById('posterFileName').textContent = file.name;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        uploadedPosterBase64 = e.target.result;
+        const img = document.getElementById('posterPreview');
+        img.src = uploadedPosterBase64;
+        img.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    }
 
-    document.getElementById('editMovieId').value = id;
-    document.getElementById('formTitle').textContent = '✏ Edit Film: ' + m.title;
-    document.getElementById('mTitle').value    = m.title;
-    document.getElementById('mDirector').value = m.director;
-    document.getElementById('mYear').value     = m.year;
-    document.getElementById('mDuration').value = m.duration;
-    document.getElementById('mPrice').value    = m.price;
-    document.getElementById('mRating').value   = m.rating;
-    document.getElementById('mDesc').value     = m.description;
-    document.getElementById('mPoster').value   = m.poster;
-    document.getElementById('mBackdrop').value = m.backdrop || '';
-    document.getElementById('mTrailer').value  = m.trailer  || '';
-    document.getElementById('mCast').value     = m.cast?.join(', ') || '';
-    document.getElementById('mNowPlaying').checked = m.nowPlaying || false;
-    document.getElementById('mFeatured').checked   = m.featured   || false;
+    function handleBackdropUpload(input) {
+      const file = input.files[0];
+      if (!file) return;
+      if (file.size > 1000 * 1024) {
+        UI.showToast('Ukuran file backdrop maks 1MB!', 'error');
+        input.value = '';
+        return;
+      }
+      document.getElementById('backdropFileName').textContent = file.name;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        uploadedBackdropBase64 = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
 
-    genreList     = [...(m.genre     || [])];
-    showtimeList  = [...(m.showtimes || [])];
-    renderGenreTags(); renderShowtimeTags(); previewPoster();
+    function resetMovieForm() {
+      document.getElementById('editMovieId').value = '';
+      document.getElementById('formTitle').textContent = '➕ Tambah Film Baru';
+      ['mTitle', 'mDirector', 'mYear', 'mDuration', 'mPrice', 'mRating', 'mDesc', 'mPoster', 'mBackdrop', 'mTrailer', 'mCast'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+      document.getElementById('mNowPlaying').checked = false;
+      document.getElementById('mFeatured').checked = false;
+      document.getElementById('posterPreview').style.display = 'none';
+      // Reset file uploads
+      uploadedPosterBase64 = '';
+      uploadedBackdropBase64 = '';
+      document.getElementById('mPosterFile').value = '';
+      document.getElementById('mBackdropFile').value = '';
+      document.getElementById('posterFileName').textContent = 'Pilih gambar poster...';
+      document.getElementById('backdropFileName').textContent = 'Pilih gambar backdrop...';
+      // Reset tabs to URL mode
+      document.querySelectorAll('.poster-tab').forEach((b, i) => b.classList.toggle('active', i === 0));
+      document.querySelectorAll('.backdrop-tab').forEach((b, i) => b.classList.toggle('active', i === 0));
+      document.getElementById('posterUrlWrap').style.display = 'block';
+      document.getElementById('posterFileWrap').style.display = 'none';
+      document.getElementById('backdropUrlWrap').style.display = 'block';
+      document.getElementById('backdropFileWrap').style.display = 'none';
+      genreList = []; showtimeList = [];
+      renderGenreTags(); renderShowtimeTags();
+    }
 
-    showPanel('add-movie', document.getElementById('nav-add-movie'));
-  }
+    async function saveMovie() {
+      const title = document.getElementById('mTitle').value.trim();
+      const director = document.getElementById('mDirector').value.trim();
+      const year = parseInt(document.getElementById('mYear').value);
+      const duration = parseInt(document.getElementById('mDuration').value);
+      const price = parseInt(document.getElementById('mPrice').value);
+      const desc = document.getElementById('mDesc').value.trim();
 
-  async function deleteMovie(id, title) {
-    if (!confirm(`Yakin ingin menghapus film "${title}"?`)) return;
-    await Movies.delete(id);
-    UI.showToast('Film berhasil dihapus!', 'success');
-    renderMoviesTable();
-    await loadDashboard();
-  }
-</script>
+      if (!title || !director || !year || !duration || !price || !desc) {
+        UI.showToast('Lengkapi semua field wajib!', 'error'); return;
+      }
+      if (!genreList.length) {
+        UI.showToast('Tambahkan minimal 1 genre!', 'error'); return;
+      }
+
+      const castRaw = document.getElementById('mCast').value.trim();
+      const castArr = castRaw ? castRaw.split(',').map(c => c.trim()).filter(Boolean) : [];
+      const posterUrl = document.getElementById('mPoster').value.trim();
+      const backdropUrl = document.getElementById('mBackdrop').value.trim();
+
+      // Priority: uploaded file (base64) > URL input > placeholder
+      const posterVal = uploadedPosterBase64 || posterUrl;
+      const backdropVal = uploadedBackdropBase64 || backdropUrl;
+
+      const movieData = {
+        title, director, year, duration, price,
+        description: desc,
+        rating: parseFloat(document.getElementById('mRating').value) || 7.0,
+        poster: posterVal || `https://placehold.co/200x300/151520/00F5D4?text=${encodeURIComponent(title)}`,
+        backdrop: backdropVal,
+        trailer: document.getElementById('mTrailer').value.trim(),
+        genre: genreList,
+        cast: castArr,
+        showtimes: showtimeList.length ? showtimeList : ['10:00', '13:00', '16:00', '19:00'],
+        nowPlaying: document.getElementById('mNowPlaying').checked,
+        featured: document.getElementById('mFeatured').checked,
+      };
+
+      const editId = document.getElementById('editMovieId').value;
+      if (editId) {
+        await Movies.update(editId, movieData);
+        UI.showToast('Film berhasil diperbarui! ✅', 'success');
+      } else {
+        await Movies.add(movieData);
+        UI.showToast('Film berhasil ditambahkan! ✅', 'success');
+      }
+
+      resetMovieForm();
+      await Movies.init();
+      renderMoviesTable();
+      await loadDashboard();
+      showPanel('movies', document.getElementById('nav-movies'));
+    }
+
+    function editMovie(id) {
+      const m = Movies.getById(id);
+      if (!m) return;
+
+      document.getElementById('editMovieId').value = id;
+      document.getElementById('formTitle').textContent = '✏ Edit Film: ' + m.title;
+      document.getElementById('mTitle').value = m.title;
+      document.getElementById('mDirector').value = m.director;
+      document.getElementById('mYear').value = m.year;
+      document.getElementById('mDuration').value = m.duration;
+      document.getElementById('mPrice').value = m.price;
+      document.getElementById('mRating').value = m.rating;
+      document.getElementById('mDesc').value = m.description;
+      document.getElementById('mPoster').value = m.poster;
+      document.getElementById('mBackdrop').value = m.backdrop || '';
+      document.getElementById('mTrailer').value = m.trailer || '';
+      document.getElementById('mCast').value = m.cast?.join(', ') || '';
+      document.getElementById('mNowPlaying').checked = m.nowPlaying || false;
+      document.getElementById('mFeatured').checked = m.featured || false;
+
+      genreList = [...(m.genre || [])];
+      showtimeList = [...(m.showtimes || [])];
+      renderGenreTags(); renderShowtimeTags(); previewPoster();
+
+      showPanel('add-movie', document.getElementById('nav-add-movie'));
+    }
+
+    async function deleteMovie(id, title) {
+      if (!confirm(`Yakin ingin menghapus film "${title}"?`)) return;
+      await Movies.delete(id);
+      UI.showToast('Film berhasil dihapus!', 'success');
+      await Movies.init();
+      renderMoviesTable();
+      await loadDashboard();
+    }
+  </script>
 </body>
+
 </html>
